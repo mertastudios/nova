@@ -269,7 +269,36 @@ function navigate(page) {
 function toggleMenu() {
     menuOpen = !menuOpen;
     document.body.style.overflow = menuOpen ? 'hidden' : '';
-    renderNav();
+    var overlay = document.getElementById('menu-overlay');
+    var sidebar = document.getElementById('menu-sidebar');
+    var bars = document.querySelectorAll('.hamburger-bar');
+    if (overlay && sidebar) {
+        if (menuOpen) {
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+        } else {
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+            sidebar.classList.add('-translate-x-full');
+            sidebar.classList.remove('translate-x-0');
+        }
+    }
+    if (bars.length === 3) {
+        if (menuOpen) {
+            bars[0].classList.add('rotate-45', 'translate-y-[9px]');
+            bars[1].classList.add('opacity-0', 'scale-0');
+            bars[1].classList.remove('opacity-100');
+            bars[2].classList.add('-rotate-45', '-translate-y-[9px]');
+        } else {
+            bars[0].classList.remove('rotate-45', 'translate-y-[9px]');
+            bars[1].classList.remove('opacity-0', 'scale-0');
+            bars[1].classList.add('opacity-100');
+            bars[2].classList.remove('-rotate-45', '-translate-y-[9px]');
+        }
+    }
+    renderSidebarLinks();
 }
 function toggleLangMenu() {
     langMenuOpen = !langMenuOpen;
@@ -279,73 +308,22 @@ function toggleFaq(idx) {
     openFaqIndex = openFaqIndex === idx ? null : idx;
     renderPage();
 }
+function renderSidebarLinks() {
+    var linksContainer = document.getElementById('sidebar-links');
+    if (!linksContainer) return;
+    linksContainer.innerHTML = [
+        { page: 'home', icon: 'fa-solid fa-house', label: t('nav.home') },
+        { page: 'help', icon: 'fa-solid fa-circle-question', label: t('nav.features') },
+        { page: 'about', icon: 'fa-solid fa-user', label: t('nav.about') },
+        { page: 'privacy', icon: 'fa-solid fa-shield-halved', label: t('nav.privacy') },
+        { page: 'terms', icon: 'fa-solid fa-file-contract', label: t('nav.terms') }
+    ].map(function(item) { return '<a href="#' + (item.page === 'home' ? '' : item.page) + '" onclick="navigate(\'' + item.page + '\'); return false;" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ' + (currentPage === item.page ? 'text-violet-400 bg-violet-500/10 border-l-2 border-violet-400' : 'text-slate-400 hover:text-violet-400 hover:bg-slate-800/50') + '"><i class="' + item.icon + ' w-5 text-center"></i><span>' + item.label + '</span></a>'; }).join('');
+}
+
 function renderNav() {
-    const lang = LANGUAGES.find(l => l.code === currentLang);
-    document.getElementById('nav-container').innerHTML = `
-        <nav class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-40">
-            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <button onclick="toggleMenu()" class="text-slate-300 hover:text-violet-400 transition-colors p-1">
-                        <div class="w-6 h-5 flex flex-col justify-between relative">
-                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}"></span>
-                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? 'opacity-0 scale-0' : 'opacity-100'}"></span>
-                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}"></span>
-                        </div>
-                    </button>
-                    <a href="#" onclick="navigate('home'); return false;" class="flex items-center space-x-2 text-xl font-bold tracking-wider hover:opacity-90 transition">
-                        <span class="text-2xl animate-pulse">🌙</span>
-                        <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
-                    </a>
-                </div>
-                <div class="relative">
-                    <button onclick="toggleLangMenu()" class="flex items-center space-x-1.5 text-slate-300 hover:text-violet-400 transition-colors p-2 rounded-lg hover:bg-slate-800/50">
-                        <span class="text-xl">${lang.flag}</span>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 ${langMenuOpen ? 'rotate-180' : ''}"></i>
-                    </button>
-                    ${langMenuOpen ? `
-                    <div class="absolute right-0 top-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden min-w-[160px] animate-fadeIn z-50">
-                        ${LANGUAGES.map(l => `
-                            <button onclick="setLang('${l.code}')" class="w-full flex items-center space-x-3 px-4 py-3 text-sm transition-colors hover:bg-slate-800 ${currentLang === l.code ? 'text-violet-400 bg-slate-800/50' : 'text-slate-300'}">
-                                <span class="text-lg">${l.flag}</span>
-                                <span>${l.label}</span>
-                                ${currentLang === l.code ? '<i class="fa-solid fa-check ml-auto text-violet-400"></i>' : ''}
-                            </button>
-                        `).join('')}
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-        </nav>
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}" onclick="toggleMenu()"></div>
-        <div class="fixed top-0 left-0 h-full w-72 max-w-[80vw] bg-slate-950 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'}">
-            <div class="flex items-center justify-between p-4 border-b border-slate-800">
-                <div class="flex items-center space-x-2">
-                    <span class="text-2xl">🌙</span>
-                    <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent font-bold text-lg">Nova AI</span>
-                </div>
-                <button onclick="toggleMenu()" class="text-slate-400 hover:text-violet-400 transition-colors p-2">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
-            <div class="p-4 space-y-2">
-                ${[
-                    { page: 'home', icon: 'fa-solid fa-house', label: t('nav.home') },
-                    { page: 'help', icon: 'fa-solid fa-circle-question', label: t('nav.features') },
-                    { page: 'about', icon: 'fa-solid fa-user', label: t('nav.about') },
-                    { page: 'privacy', icon: 'fa-solid fa-shield-halved', label: t('nav.privacy') },
-                    { page: 'terms', icon: 'fa-solid fa-file-contract', label: t('nav.terms') }
-                ].map(item => `
-                    <a href="#${item.page === 'home' ? '' : item.page}" onclick="navigate('${item.page}'); return false;" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${currentPage === item.page ? 'text-violet-400 bg-violet-500/10 border-l-2 border-violet-400' : 'text-slate-400 hover:text-violet-400 hover:bg-slate-800/50'}">
-                        <i class="${item.icon} w-5 text-center"></i>
-                        <span>${item.label}</span>
-                    </a>
-                `).join('')}
-            </div>
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800">
-                <p class="text-xs text-slate-500 text-center">© 2026 Nova AI by Merta</p>
-            </div>
-        </div>
-    `;
+    var lang = LANGUAGES.find(function(l) { return l.code === currentLang; });
+    document.getElementById('nav-bar').innerHTML = '<div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center"><div class="flex items-center space-x-3"><button onclick="toggleMenu()" class="text-slate-300 hover:text-violet-400 transition-colors p-1"><div class="w-6 h-5 flex flex-col justify-between relative"><span class="hamburger-bar block h-0.5 w-6 bg-current rounded transition-all duration-300"></span><span class="hamburger-bar block h-0.5 w-6 bg-current rounded transition-all duration-300 opacity-100"></span><span class="hamburger-bar block h-0.5 w-6 bg-current rounded transition-all duration-300"></span></div></button><a href="#" onclick="navigate(\'home\'); return false;" class="flex items-center space-x-2 text-xl font-bold tracking-wider hover:opacity-90 transition"><span class="text-2xl animate-pulse">🌙</span><span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span></a></div><div class="relative"><button onclick="toggleLangMenu()" class="flex items-center space-x-1.5 text-slate-300 hover:text-violet-400 transition-colors p-2 rounded-lg hover:bg-slate-800/50"><span class="text-xl">' + lang.flag + '</span><i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 ' + (langMenuOpen ? 'rotate-180' : '') + '"></i></button>' + (langMenuOpen ? '<div class="absolute right-0 top-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden min-w-[160px] animate-fadeIn z-50">' + LANGUAGES.map(function(l) { return '<button onclick="setLang(\'' + l.code + '\')" class="w-full flex items-center space-x-3 px-4 py-3 text-sm transition-colors hover:bg-slate-800 ' + (currentLang === l.code ? 'text-violet-400 bg-slate-800/50' : 'text-slate-300') + '"><span class="text-lg">' + l.flag + '</span><span>' + l.label + '</span>' + (currentLang === l.code ? '<i class="fa-solid fa-check ml-auto text-violet-400"></i>' : '') + '</button>'; }).join('') + '</div>' : '') + '</div></div>';
+    renderSidebarLinks();
 }
 function renderHome() {
     const benefits = t('benefits');
@@ -604,7 +582,23 @@ document.addEventListener('click', (e) => {
     }
 });
 </script>
-<div id="nav-container"></div>
+<nav id="nav-bar" class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-40"></nav>
+<div id="menu-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none" onclick="toggleMenu()"></div>
+<div id="menu-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] bg-slate-950 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-out -translate-x-full">
+    <div class="flex items-center justify-between p-4 border-b border-slate-800">
+        <div class="flex items-center space-x-2">
+            <span class="text-2xl">🌙</span>
+            <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent font-bold text-lg">Nova AI</span>
+        </div>
+        <button onclick="toggleMenu()" class="text-slate-400 hover:text-violet-400 transition-colors p-2">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+    </div>
+    <div id="sidebar-links" class="p-4 space-y-2"></div>
+    <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800">
+        <p class="text-xs text-slate-500 text-center">© 2026 Nova AI by Merta</p>
+    </div>
+</div>
 <div id="content" class="flex-grow"></div>
 <div id="footer-container"></div>
 </body>
