@@ -4,9 +4,9 @@ import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 /* ============================================================
    DISCORD INVITE URL - HIER ÄNDERN
    ============================================================ */
-const DISCORD_INVITE_URL = 'YOUR_DISCORD_INVITE_URL_HERE';
-const YOUTUBE_URL = 'YOUR_YOUTUBE_CHANNEL_URL_HERE';
-const DISCORD_USERNAME = 'YOUR_DISCORD_USERNAME_HERE';
+const DISCORD_INVITE_URL = 'https://discord.com/oauth2/authorize?client_id=1516309601346129920&permissions=8&integration_type=0&scope=bot+applications.commands';
+const YOUTUBE_URL = 'https://www.youtube.com/@Merta.Studios';
+const DISCORD_USERNAME = '@_mertastudios';
 
 /* ============================================================
    ÜBERSETZUNGEN - HIER TEXTE ÄNDERN
