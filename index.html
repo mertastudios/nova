@@ -107,12 +107,20 @@ const TRANSLATIONS = {
         'help.feat7_desc': 'No complicated dashboards or web panels required. Everything is configured directly through Discord slash commands. Set up your channel, personality, API keys, and language — all without leaving Discord.',
         // Help - FAQ
         'help.faq_title': 'Troubleshooting & FAQ',
-        'help.faq1_q': 'How do we resolve Groq API Rate Limits or "429 Too Many Requests"?',
-        'help.faq1_a': 'Nova AI comes standard with built-in Key-Rotation Automation. If you face persistent rate limits, run /manage_api_keys and register multiple keys. The system rotates to a fresh backup instantly when an active token encounters a rate limit block.',
-        'help.faq2_q': 'The Bot is online but not reading messages or usernames. Why?',
-        'help.faq2_a': 'You likely skipped mandatory Privileged Gateway Intents during creation in the Discord Developer Portal. Access your application profile, navigate to the Bot tab, scroll down, and manually switch on both Message Content Intent and Server Members Intent.',
-        'help.faq3_q': 'What is Server Concurrency and why did my warning text disappear?',
-        'help.faq3_a': "To preserve system stability, Nova AI only builds one reply per server simultaneously. If you ping Nova while it's already constructing a response, a temporary warning message pings you. This alert auto-deletes itself after 5 seconds.",
+        'help.faq1_q': 'What can I do if my Groq usage limit is reached or if I need instant capacity?',
+        'help.faq1_a': 'Simply create a fresh, free Groq account, generate a new API key, and add it using the /manage_api_keys command. Thanks to the automated key rotation, Nova AI will instantly utilize the new capacity.',
+        'help.faq2_q': 'What does the "Groq API error 401" mean and how do I fix it?',
+        'help.faq2_a': 'This indicates that your registered API keys are invalid or expired. Run the /manage_api_keys command to re-register them. You can also press the built-in tutorial button inside the command response for guidance.',
+        'help.faq3_q': 'What do errors like 400, 403, 500, or 503 mean, or what if my issue is not listed here?',
+        'help.faq3_a': 'These are generic API glitches or temporary server disruptions. Please be patient for a brief moment. If the issue persists, feel free to report it directly to the developer using the /feedback command.',
+        'help.faq4_q': 'The bot responds uncreatively or constantly repeats the same expressions. Any tips?',
+        'help.faq4_a': 'AI models can get repetitive if their system instructions are vague. Try asking another advanced AI (like ChatGPT or Claude) to refine your prompt into a highly detailed, creative behavior profile, then load it via /edit_personality.',
+        'help.faq5_q': 'Why is nothing working even though the bot is displayed as "Online"?',
+        'help.faq5_a': 'An internal glitch may have temporarily frozen the bot\'s background webserver process. The developer is automatically notified of such incidents. Please have a little patience while the script recovers.',
+        'help.faq6_q': 'Why is the bot completely offline?',
+        'help.faq6_a': 'When Nova AI is offline, the developer is either deploying an important upgrade or the webserver crashed. Rest assured, the backend infrastructure is monitored and the developer is already working on bringing it back online.',
+        'help.faq7_q': 'The bot is stuck in a weird conversation loop or remembers incorrect details?',
+        'help.faq7_a': 'Sometimes the active conversation context gets cluttered. You can completely clear the memory buffer for that specific channel by executing the /reset_chat_history command to start a fresh sequence.',
         'help.cta_title': 'Enough reading?',
         // About
         'about.title_prefix': 'Developed by',
@@ -205,12 +213,20 @@ const TRANSLATIONS = {
         'help.feat7_desc': 'Keine Dashboards nötig. Alles über Discord-Slash-Befehle konfigurierbar.',
         // Help - FAQ
         'help.faq_title': 'Fehlerbehebung & FAQ',
-        'help.faq1_q': 'Wie löse ich Groq API Rate-Limits oder "429 Too Many Requests"?',
-        'help.faq1_a': 'Nova AI hat eingebaute Key-Rotation. Führe /manage_api_keys aus und registriere mehrere Keys. Das System rotiert automatisch.',
-        'help.faq2_q': 'Der Bot ist online, liest aber keine Nachrichten. Warum?',
-        'help.faq2_a': 'Du hast wahrscheinlich die Privileged Gateway Intents übersprungen. Aktiviere Message Content Intent und Server Members Intent im Developer Portal.',
-        'help.faq3_q': 'Was ist Server-Konkurrenz und warum verschwand mein Warntext?',
-        'help.faq3_a': 'Nova AI erstellt nur eine Antwort pro Server gleichzeitig. Warnungen löschen sich nach 5 Sekunden automatisch.',
+        'help.faq1_q': 'Was kann ich tun, wenn mein Groq-Nutzungslimit erreicht wurde und ich sofort mehr Kapazität brauche?',
+        'help.faq1_a': 'Erstelle dir einfach einen frischen, kostenlosen Groq-Account, lege dort einen neuen API-Key an und füge diesen mit dem Befehl /manage_api_keys hinzu. Durch die automatische Key-Rotation nutzt der Bot die neue Kapazität sofort.',
+        'help.faq2_q': 'Was bedeutet der Fehler "Groq API error 401" und wie behebe ich ihn?',
+        'help.faq2_a': 'Dieser Fehler bedeutet, dass deine hinterlegten API-Keys ungültig oder abgelaufen sind. Richte sie einfach mit dem Befehl /manage_api_keys neu ein. Du kannst nach der Ausführung des Befehls auch den praktischen Tutorial-Button nutzen.',
+        'help.faq3_q': 'Fehler 400, 403, 500, 503 oder andere Probleme – was bedeuten sie und was hilft?',
+        'help.faq3_a': 'Hierbei handelt es sich meist um temporäre Schnittstellenfehler oder unerwartete Serverprobleme. Bitte habe einen Moment Geduld. Sollte das Problem bestehen bleiben oder deine Frage hier nicht beantwortet werden, kontaktiere den Entwickler direkt über den Befehl /feedback.',
+        'help.faq4_q': 'Der Bot antwortet unkreativ oder wiederholt ständig dieselben Phrasen. Was kann ich tun?',
+        'help.faq4_a': 'KIs neigen manchmal zu Wiederholungen, wenn die Verhaltensvorgaben zu ungenau sind. Tipp: Lass dir von einer anderen KI (wie ChatGPT oder Claude) einen detaillierteren und kreativeren Prompt schreiben und lade diesen über /edit_personality hoch.',
+        'help.faq5_q': 'Warum funktioniert nichts, obwohl der Bot als "Online" angezeigt wird?',
+        'help.faq5_a': 'Höchstwahrscheinlich ist ein interner Fehler im Webserver des Bots aufgetreten, der die Nachrichtenverarbeitung blockiert. Der Entwickler wird in solchen Fällen automatisch benachrichtigt. Hab bitte etwas Geduld, während das System neu startet.',
+        'help.faq6_q': 'Warum ist der Bot komplett offline?',
+        'help.faq6_a': 'Wenn der Bot offline ist, führt der Entwickler entweder ein wichtiges Update durch oder der Webserver ist abgestürzt. Keine Sorge: Es wird im Hintergrund bereits daran gearbeitet, Nova AI so schnell wie möglich wieder online zu bringen.',
+        'help.faq7_q': 'Der Bot hängt in einer Gedankenschleife fest oder verwechselt Details. Was hilft?',
+        'help.faq7_a': 'Manchmal läuft der temporäre Chat-Speicher voll oder verfängt sich. Nutze einfach den Befehl /reset_chat_history, um das Gedächtnis des Bots für den aktuellen Kanal komplett zu leeren und ein frisches Gespräch zu beginnen.',
         'help.cta_title': 'Genug gelesen?',
         // About
         'about.title_prefix': 'Entwickelt von',
@@ -416,7 +432,11 @@ function renderHelp() {
     const faqs = [
         { q: t('help.faq1_q'), a: t('help.faq1_a') },
         { q: t('help.faq2_q'), a: t('help.faq2_a') },
-        { q: t('help.faq3_q'), a: t('help.faq3_a') }
+        { q: t('help.faq3_q'), a: t('help.faq3_a') },
+        { q: t('help.faq4_q'), a: t('help.faq4_a') },
+        { q: t('help.faq5_q'), a: t('help.faq5_a') },
+        { q: t('help.faq6_q'), a: t('help.faq6_a') },
+        { q: t('help.faq7_q'), a: t('help.faq7_a') }
     ];
     return `
         <main class="max-w-5xl mx-auto px-4 py-10 md:py-12 w-full">
