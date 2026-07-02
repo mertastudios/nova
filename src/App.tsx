@@ -281,7 +281,10 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [location.pathname]);
+  useEffect(() => { 
+  setMenuOpen(false); 
+  document.body.style.overflow = ''; // Schaltet das Scrollen beim Seitenwechsel wieder an
+}, [location.pathname]);
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
