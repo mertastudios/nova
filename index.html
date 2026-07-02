@@ -1,13 +1,611 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nova AI - Discord AI Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <style>
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.9; filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.7)); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-glow { animation: pulseGlow 4s ease-in-out infinite; }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-slideIn { animation: slideIn 0.6s ease-out forwards; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+        body { overflow-x: hidden; }
+        .page { display: none; }
+        .page.active { display: block; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen font-sans selection:bg-violet-500 selection:text-white">
+<!-- ============================================================
+     KONFIGURATION - HIER DEINE LINKS ÄNDERN
+     ============================================================ -->
+<script>
+const CONFIG = {
+    DISCORD_INVITE_URL: 'YOUR_DISCORD_INVITE_URL_HERE',
+    YOUTUBE_URL: 'YOUR_YOUTUBE_CHANNEL_URL_HERE',
+    DISCORD_USERNAME: 'YOUR_DISCORD_USERNAME_HERE'
+};
+/* ============================================================
+   ÜBERSETZUNGEN - HIER TEXTE ÄNDERN
+   
+   Neue Sprache hinzufügen:
+   1. Neuen Eintrag in LANGUAGES array
+   2. Neuen Block in TRANSLATIONS kopieren und übersetzen
+   ============================================================ */
+const LANGUAGES = [
+    { code: 'en', flag: '🇬🇧', label: 'English' },
+    { code: 'de', flag: '🇩🇪', label: 'Deutsch' }
+];
+const TRANSLATIONS = {
+    en: {
+        // Navigation
+        'nav.home': 'Home',
+        'nav.features': 'Features & Help',
+        'nav.about': 'About & Contact',
+        'nav.privacy': 'Privacy',
+        'nav.terms': 'Terms',
+        // Home
+        'home.meet': 'Meet',
+        'home.subtitle': 'Your Ultimate Discord AI Chatbot',
+        'home.description': 'Nova AI is a powerful, intelligent AI chatbot built for Discord servers. Let your community chat with an AI that truly understands context, remembers conversations, and feels alive.',
+        'home.invite': 'Add Nova AI to Your Server',
+        'home.discord_chatbot': 'Discord AI Chatbot',
+        'home.highlight1_title': 'Built for Discord',
+        'home.highlight1_desc': 'Designed from the ground up as a Discord bot — not a generic AI ported over. Nova AI lives in your server and talks like a real member.',
+        'home.highlight2_title': 'Completely Free',
+        'home.highlight2_desc': 'No premium plans, no paywalls. Every single feature is available for free, forever. Just add it and start chatting.',
+        'home.highlight3_title': 'Lightning Fast',
+        'home.highlight3_desc': "Powered by Groq's ultra-fast inference. Responses generate in ~1 second — faster than you can blink.",
+        // Benefits rotation
+        'benefits': [
+            'Not just another soulless tool.',
+            'Dynamic Server Personalities.',
+            'Intelligent Context-Aware Parsing.',
+            'Automated API Key Rotation.',
+            'Full Multi-Language Support.',
+            '100% Privacy & On-Leave Wiping.',
+            'A real Discord AI companion.'
+        ],
+        // Help - Commands
+        'help.title': 'Features & Commands',
+        'help.subtitle': 'Master Nova AI. Explore its powerful features, configuration commands, and diagnostic solutions below.',
+        'help.commands_title': 'Slash Commands',
+        'help.admin_only': 'Admin Only',
+        'help.everyone': 'Everyone',
+        'help.cmd_set_channel': 'Designates an automated AI chat channel. Inside this channel, Nova AI responds instantly to every message without needing a ping.',
+        'help.cmd_edit_personality': 'Switches the AI personality template (e.g., Gamer Nerd, Dramatic Diva) or opens a custom modal form for custom prompts.',
+        'help.cmd_manage_api_keys': 'Opens an ephemeral control panel to register, delete, or rotate multiple Groq API keys with built-in localized tutorials.',
+        'help.cmd_set_language': 'Changes the global localization setting (English or German supported out of the box). Updates embed styles and prompt handling.',
+        'help.cmd_reset_chat_history': 'Wipes the conversational memory buffer completely clean for the active server channel to start a fresh sequence.',
+        'help.cmd_feedback': 'Launches a direct developer modal interface. Submissions safely route straight to Merta. Global 3-hour cooldown applies per user.',
+        // Help - Features
+        'help.features_title': 'Features',
+        'help.features_subtitle': 'Discover what makes Nova AI truly unique among Discord bots.',
+        'help.feat1_title': 'Blazing Fast AI Responses',
+        'help.feat1_desc': "Powered by Groq's revolutionary inference engine, Nova AI generates complete responses in approximately 1 second. No waiting, no loading screens — instant, natural conversation.",
+        'help.feat2_title': 'Context Understanding & Memory',
+        'help.feat2_desc': "Nova AI doesn't just read your last message — it remembers the entire conversation history and understands the context. It even sees user profiles, display names, and roles.",
+        'help.feat3_title': 'Fully Custom Personality',
+        'help.feat3_desc': 'Make Nova AI act like anyone or anything. From a sarcastic pirate to a helpful study buddy — the personality system lets you write completely custom behavior prompts.',
+        'help.feat4_title': '100% Free — No Premium',
+        'help.feat4_desc': 'Every single feature is completely free. There is no premium version, no paywall, no hidden costs. All users get full access to every capability Nova AI offers. Forever.',
+        'help.feat5_title': 'Understands All Attachments',
+        'help.feat5_desc': 'Send stickers, emojis, images, videos, files, or even voice messages — Nova AI understands them all. It processes and responds to any type of Discord attachment intelligently.',
+        'help.feat6_title': 'Multi-Key API Rotation',
+        'help.feat6_desc': 'Register multiple Groq API keys from different accounts. Nova AI automatically rotates between them when one hits a rate limit, giving your server more free usage.',
+        'help.feat7_title': 'Simple Setup via Commands',
+        'help.feat7_desc': 'No complicated dashboards or web panels required. Everything is configured directly through Discord slash commands. Set up your channel, personality, API keys, and language — all without leaving Discord.',
+        // Help - FAQ
+        'help.faq_title': 'Troubleshooting & FAQ',
+        'help.faq1_q': 'How do we resolve Groq API Rate Limits or "429 Too Many Requests"?',
+        'help.faq1_a': 'Nova AI comes standard with built-in Key-Rotation Automation. If you face persistent rate limits, run /manage_api_keys and register multiple keys. The system rotates to a fresh backup instantly when an active token encounters a rate limit block.',
+        'help.faq2_q': 'The Bot is online but not reading messages or usernames. Why?',
+        'help.faq2_a': 'You likely skipped mandatory Privileged Gateway Intents during creation in the Discord Developer Portal. Access your application profile, navigate to the Bot tab, scroll down, and manually switch on both Message Content Intent and Server Members Intent.',
+        'help.faq3_q': 'What is Server Concurrency and why did my warning text disappear?',
+        'help.faq3_a': "To preserve system stability, Nova AI only builds one reply per server simultaneously. If you ping Nova while it's already constructing a response, a temporary warning message pings you. This alert auto-deletes itself after 5 seconds.",
+        'help.cta_title': 'Enough reading?',
+        // About
+        'about.title_prefix': 'Developed by',
+        'about.discord_handle': 'Discord Handle:',
+        'about.bio': 'Hey there! I am Merta, a creator specializing in building interactive digital experiences. Nova AI was envisioned as a living, breathing companion for communities rather than a cold algorithmic script runner.',
+        'about.collab_title': 'Synergistic AI Development',
+        'about.collab_desc': 'This production code infrastructure was completely architected and written in collaboration with',
+        'about.youtube': 'Subscribe on YouTube',
+        'about.docs': 'Read Documentation',
+        // Privacy
+        'privacy.title': 'Privacy Policy',
+        'privacy.updated': 'Last updated: July 2026',
+        'privacy.s1_title': '1. Data Collection Scope',
+        'privacy.s1_text': 'Nova AI temporarily stores message strings, user display names, and contextual attachment metadata strictly within active conversations inside your designated text channel or direct pings.',
+        'privacy.s2_title': '2. Encryption Standards',
+        'privacy.s2_text': "All sensitive operational parameters, specifically server administrators' unique Groq API credentials, are permanently protected using AES-256 cryptographic encryption.",
+        'privacy.s3_title': '3. Absolute Erasure Policy',
+        'privacy.s3_text': 'The exact millisecond Nova AI detects a guild departure event, a system-wide database command cascades to scrub ALL corresponding server configs, chat memories, and API records instantly.',
+        'privacy.s4_title': '4. Third-Party Routing',
+        'privacy.s4_text': 'Anonymized contextual scripts are safely evaluated via the Groq processing infrastructure. No text flows or identification datasets are saved, monetized, or shared.',
+        // Terms
+        'terms.title': 'Terms of Service',
+        'terms.updated': 'Last updated: July 2026',
+        'terms.s1_title': '1. Usage Agreement',
+        'terms.s1_text': "By connecting Nova AI to your guild server channels, you validate compliance with Discord's Developer Terms of Service and Application usage regulations.",
+        'terms.s2_title': '2. Key Ownership & Abuse',
+        'terms.s2_text': 'Server administrators are completely accountable for any third-party credential tokens they connect. Flooding endpoints or generating spam is strictly prohibited.',
+        'terms.s3_title': '3. Liability Limits',
+        'terms.s3_text': 'Nova AI is supplied "as-is", without system availability warranties or service maintenance mandates. The engineering group holds zero liability for downtime.',
+        // Footer
+        'footer.text': '© 2026 Nova AI. Crafted beautifully by Merta. All rights reserved.'
+    },
+    de: {
+        // Navigation
+        'nav.home': 'Startseite',
+        'nav.features': 'Features & Hilfe',
+        'nav.about': 'Über uns & Kontakt',
+        'nav.privacy': 'Datenschutz',
+        'nav.terms': 'Nutzungsbedingungen',
+        // Home
+        'home.meet': 'Triff',
+        'home.subtitle': 'Dein ultimativer Discord AI Chatbot',
+        'home.description': 'Nova AI ist ein leistungsstarker, intelligenter AI-Chatbot für Discord-Server. Lass deine Community mit einer KI chatten, die Kontext wirklich versteht und sich lebendig anfühlt.',
+        'home.invite': 'Nova AI zum Server hinzufügen',
+        'home.discord_chatbot': 'Discord AI Chatbot',
+        'home.highlight1_title': 'Für Discord gebaut',
+        'home.highlight1_desc': 'Von Grund auf als Discord-Bot konzipiert — keine generische KI. Nova AI lebt auf deinem Server und spricht wie ein echtes Mitglied.',
+        'home.highlight2_title': 'Komplett kostenlos',
+        'home.highlight2_desc': 'Keine Premium-Pläne, keine Paywalls. Jedes Feature ist für immer kostenlos. Einfach hinzufügen und loschatten.',
+        'home.highlight3_title': 'Blitzschnell',
+        'home.highlight3_desc': 'Angetrieben von Groqs ultraschneller Inferenz. Antworten in ~1 Sekunde — schneller als du blinzeln kannst.',
+        // Benefits rotation
+        'benefits': [
+            'Nicht nur ein seelenloses Tool.',
+            'Dynamische Server-Persönlichkeiten.',
+            'Intelligentes kontextbewusstes Parsing.',
+            'Automatische API-Key-Rotation.',
+            'Volle Mehrsprachunterstützung.',
+            '100% Datenschutz & Löschung beim Verlassen.',
+            'Ein echter Discord AI Begleiter.'
+        ],
+        // Help - Commands
+        'help.title': 'Features & Befehle',
+        'help.subtitle': 'Meistere Nova AI. Entdecke die leistungsstarken Features, Konfigurationsbefehle und Diagnoselösungen.',
+        'help.commands_title': 'Slash-Befehle',
+        'help.admin_only': 'Nur Admins',
+        'help.everyone': 'Jeder',
+        'help.cmd_set_channel': 'Legt einen automatisierten AI-Chat-Kanal fest. Nova AI antwortet sofort auf jede Nachricht ohne Ping.',
+        'help.cmd_edit_personality': 'Wechselt die AI-Persönlichkeitsvorlage oder öffnet ein Modal für eigene Prompts.',
+        'help.cmd_manage_api_keys': 'Öffnet ein Kontrollpanel zum Verwalten mehrerer Groq API-Keys.',
+        'help.cmd_set_language': 'Ändert die Spracheinstellung (Englisch oder Deutsch). Aktualisiert Embed-Stile.',
+        'help.cmd_reset_chat_history': 'Löscht den Gesprächsspeicher für den aktiven Kanal.',
+        'help.cmd_feedback': 'Startet eine Entwickler-Modal-Oberfläche. 3-Stunden-Cooldown pro Benutzer.',
+        // Help - Features
+        'help.features_title': 'Features',
+        'help.features_subtitle': 'Entdecke, was Nova AI unter Discord-Bots einzigartig macht.',
+        'help.feat1_title': 'Blitzschnelle AI-Antworten',
+        'help.feat1_desc': 'Nova AI generiert Antworten in etwa 1 Sekunde. Kein Warten — sofortige, natürliche Konversation.',
+        'help.feat2_title': 'Kontextverständnis & Erinnerung',
+        'help.feat2_desc': 'Nova AI erinnert sich an den gesamten Chatverlauf und sieht Benutzerprofile, Namen und Rollen.',
+        'help.feat3_title': 'Komplett anpassbare Persönlichkeit',
+        'help.feat3_desc': 'Lass Nova AI wie jemanden beliebiges agieren. Das Persönlichkeitssystem erlaubt komplett eigene Prompts.',
+        'help.feat4_title': '100% Kostenlos — Kein Premium',
+        'help.feat4_desc': 'Jedes Feature ist komplett kostenlos. Keine Premium-Version, keine Paywall, keine versteckten Kosten. Für immer.',
+        'help.feat5_title': 'Versteht alle Anhänge',
+        'help.feat5_desc': 'Sticker, Emojis, Bilder, Videos, Dateien, Sprachnachrichten — Nova AI versteht und reagiert intelligent.',
+        'help.feat6_title': 'Multi-Key API-Rotation',
+        'help.feat6_desc': 'Registriere mehrere Groq API-Keys. Nova AI wechselt automatisch bei Rate-Limits.',
+        'help.feat7_title': 'Einfache Einrichtung',
+        'help.feat7_desc': 'Keine Dashboards nötig. Alles über Discord-Slash-Befehle konfigurierbar.',
+        // Help - FAQ
+        'help.faq_title': 'Fehlerbehebung & FAQ',
+        'help.faq1_q': 'Wie löse ich Groq API Rate-Limits oder "429 Too Many Requests"?',
+        'help.faq1_a': 'Nova AI hat eingebaute Key-Rotation. Führe /manage_api_keys aus und registriere mehrere Keys. Das System rotiert automatisch.',
+        'help.faq2_q': 'Der Bot ist online, liest aber keine Nachrichten. Warum?',
+        'help.faq2_a': 'Du hast wahrscheinlich die Privileged Gateway Intents übersprungen. Aktiviere Message Content Intent und Server Members Intent im Developer Portal.',
+        'help.faq3_q': 'Was ist Server-Konkurrenz und warum verschwand mein Warntext?',
+        'help.faq3_a': 'Nova AI erstellt nur eine Antwort pro Server gleichzeitig. Warnungen löschen sich nach 5 Sekunden automatisch.',
+        'help.cta_title': 'Genug gelesen?',
+        // About
+        'about.title_prefix': 'Entwickelt von',
+        'about.discord_handle': 'Discord-Handle:',
+        'about.bio': 'Hey! Ich bin Merta, ein Entwickler für interaktive digitale Erlebnisse. Nova AI wurde als lebendiger Begleiter für Communities konzipiert.',
+        'about.collab_title': 'Synergetische AI-Entwicklung',
+        'about.collab_desc': 'Diese Code-Infrastruktur wurde in Zusammenarbeit mit',
+        'about.youtube': 'Auf YouTube abonnieren',
+        'about.docs': 'Dokumentation lesen',
+        // Privacy
+        'privacy.title': 'Datenschutzrichtlinie',
+        'privacy.updated': 'Zuletzt aktualisiert: Juli 2026',
+        'privacy.s1_title': '1. Umfang der Datenerhebung',
+        'privacy.s1_text': 'Nova AI speichert temporär Nachrichten und Metadaten nur innerhalb aktiver Gespräche in festgelegten Kanälen.',
+        'privacy.s2_title': '2. Verschlüsselung',
+        'privacy.s2_text': 'Alle sensiblen Daten, insbesondere API-Anmeldedaten, sind durch AES-256 Verschlüsselung geschützt.',
+        'privacy.s3_title': '3. Löschrichtlinie',
+        'privacy.s3_text': 'Wenn Nova AI einen Server verlässt, werden ALLE Daten sofort und dauerhaft gelöscht.',
+        'privacy.s4_title': '4. Drittanbieter',
+        'privacy.s4_text': 'Daten werden über Groq verarbeitet. Keine Daten werden gespeichert, monetarisiert oder geteilt.',
+        // Terms
+        'terms.title': 'Nutzungsbedingungen',
+        'terms.updated': 'Zuletzt aktualisiert: Juli 2026',
+        'terms.s1_title': '1. Nutzungsvereinbarung',
+        'terms.s1_text': 'Durch Nutzung von Nova AI bestätigst du die Einhaltung von Discords Entwickler-Nutzungsbedingungen.',
+        'terms.s2_title': '2. Key-Eigentum & Missbrauch',
+        'terms.s2_text': 'Admins sind verantwortlich für ihre API-Keys. Spam und Missbrauch sind verboten.',
+        'terms.s3_title': '3. Haftung',
+        'terms.s3_text': 'Nova AI wird "wie besehen" bereitgestellt, ohne Garantien. Keine Haftung für Ausfälle.',
+        // Footer
+        'footer.text': '© 2026 Nova AI. Liebevoll gestaltet von Merta. Alle Rechte vorbehalten.'
+    }
+};
+let currentLang = 'en';
+let currentPage = 'home';
+let benefitIndex = 0;
+let menuOpen = false;
+let langMenuOpen = false;
+let openFaqIndex = null;
+function t(key) {
+    return TRANSLATIONS[currentLang][key] || TRANSLATIONS['en'][key] || key;
+}
+function setLang(lang) {
+    currentLang = lang;
+    langMenuOpen = false;
+    renderPage();
+}
+function navigate(page) {
+    currentPage = page;
+    menuOpen = false;
+    window.scrollTo(0, 0);
+    renderPage();
+    // Update URL hash
+    window.location.hash = page === 'home' ? '' : page;
+}
+function toggleMenu() {
+    menuOpen = !menuOpen;
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    renderNav();
+}
+function toggleLangMenu() {
+    langMenuOpen = !langMenuOpen;
+    renderNav();
+}
+function toggleFaq(idx) {
+    openFaqIndex = openFaqIndex === idx ? null : idx;
+    renderPage();
+}
+function renderNav() {
+    const lang = LANGUAGES.find(l => l.code === currentLang);
+    document.getElementById('nav-container').innerHTML = `
+        <nav class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-40">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleMenu()" class="text-slate-300 hover:text-violet-400 transition-colors p-1">
+                        <div class="w-6 h-5 flex flex-col justify-between relative">
+                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}"></span>
+                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? 'opacity-0 scale-0' : 'opacity-100'}"></span>
+                            <span class="block h-0.5 w-6 bg-current rounded transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}"></span>
+                        </div>
+                    </button>
+                    <a href="#" onclick="navigate('home'); return false;" class="flex items-center space-x-2 text-xl font-bold tracking-wider hover:opacity-90 transition">
+                        <span class="text-2xl animate-pulse">🌙</span>
+                        <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
+                    </a>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleLangMenu()" class="flex items-center space-x-1.5 text-slate-300 hover:text-violet-400 transition-colors p-2 rounded-lg hover:bg-slate-800/50">
+                        <span class="text-xl">${lang.flag}</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300 ${langMenuOpen ? 'rotate-180' : ''}"></i>
+                    </button>
+                    ${langMenuOpen ? `
+                    <div class="absolute right-0 top-full mt-2 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-hidden min-w-[160px] animate-fadeIn z-50">
+                        ${LANGUAGES.map(l => `
+                            <button onclick="setLang('${l.code}')" class="w-full flex items-center space-x-3 px-4 py-3 text-sm transition-colors hover:bg-slate-800 ${currentLang === l.code ? 'text-violet-400 bg-slate-800/50' : 'text-slate-300'}">
+                                <span class="text-lg">${l.flag}</span>
+                                <span>${l.label}</span>
+                                ${currentLang === l.code ? '<i class="fa-solid fa-check ml-auto text-violet-400"></i>' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        </nav>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}" onclick="toggleMenu()"></div>
+        <div class="fixed top-0 left-0 h-full w-72 max-w-[80vw] bg-slate-950 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'}">
+            <div class="flex items-center justify-between p-4 border-b border-slate-800">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🌙</span>
+                    <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent font-bold text-lg">Nova AI</span>
+                </div>
+                <button onclick="toggleMenu()" class="text-slate-400 hover:text-violet-400 transition-colors p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-2">
+                ${[
+                    { page: 'home', icon: 'fa-solid fa-house', label: t('nav.home') },
+                    { page: 'help', icon: 'fa-solid fa-circle-question', label: t('nav.features') },
+                    { page: 'about', icon: 'fa-solid fa-user', label: t('nav.about') },
+                    { page: 'privacy', icon: 'fa-solid fa-shield-halved', label: t('nav.privacy') },
+                    { page: 'terms', icon: 'fa-solid fa-file-contract', label: t('nav.terms') }
+                ].map(item => `
+                    <a href="#${item.page === 'home' ? '' : item.page}" onclick="navigate('${item.page}'); return false;" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${currentPage === item.page ? 'text-violet-400 bg-violet-500/10 border-l-2 border-violet-400' : 'text-slate-400 hover:text-violet-400 hover:bg-slate-800/50'}">
+                        <i class="${item.icon} w-5 text-center"></i>
+                        <span>${item.label}</span>
+                    </a>
+                `).join('')}
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-800">
+                <p class="text-xs text-slate-500 text-center">© 2026 Nova AI by Merta</p>
+            </div>
+        </div>
+    `;
+}
+function renderHome() {
+    const benefits = t('benefits');
+    return `
+        <div class="relative">
+            <div class="absolute top-[-10%] left-[-10%] w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-cyan-900/20 rounded-full blur-[150px] pointer-events-none"></div>
+            <main class="max-w-4xl mx-auto px-4 py-12 md:py-16 flex flex-col items-center justify-center text-center relative z-10">
+                <div class="relative mb-8 md:mb-10 group animate-slideIn">
+                    <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full blur-2xl opacity-40 animate-glow"></div>
+                    <div class="w-28 h-28 md:w-40 md:h-40 bg-slate-900/90 border-2 border-violet-500/40 rounded-full flex items-center justify-center text-5xl md:text-7xl shadow-2xl animate-float transition-all duration-300 group-hover:border-cyan-400/60">🌙</div>
+                </div>
+                <span class="inline-flex items-center space-x-2 bg-indigo-950/60 border border-indigo-500/30 rounded-full px-4 py-1.5 mb-5 text-sm animate-slideIn" style="animation-delay: 0.1s">
+                    <i class="fa-brands fa-discord text-indigo-400"></i>
+                    <span class="text-indigo-300 font-medium">${t('home.discord_chatbot')}</span>
+                </span>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-4 animate-slideIn" style="animation-delay: 0.2s">
+                    ${t('home.meet')} <span class="bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-4 animate-slideIn" style="animation-delay: 0.3s">${t('home.subtitle')}</p>
+                <p class="text-sm md:text-base text-slate-500 max-w-xl mb-8 leading-relaxed animate-slideIn" style="animation-delay: 0.4s">${t('home.description')}</p>
+                <div class="h-12 md:h-16 flex items-center justify-center mb-10">
+                    <p id="benefit-text" class="text-lg md:text-2xl font-medium font-mono bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent transition-opacity duration-500">${benefits[benefitIndex]}</p>
+                </div>
+                <div class="relative group mb-16 animate-slideIn" style="animation-delay: 0.5s">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                    <a href="${CONFIG.DISCORD_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="relative px-8 py-4 md:px-10 md:py-5 bg-gradient-to-r from-violet-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 text-white font-bold text-base md:text-xl rounded-xl shadow-2xl transition duration-300 flex items-center space-x-3 transform group-hover:scale-[1.02]">
+                        <i class="fa-brands fa-discord text-xl md:text-2xl"></i>
+                        <span>${t('home.invite')}</span>
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 hover:border-violet-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-violet-500/10 group animate-slideIn" style="animation-delay: 0.6s">
+                        <div class="w-12 h-12 bg-violet-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-brands fa-discord text-2xl text-violet-400"></i></div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-2">${t('home.highlight1_title')}</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">${t('home.highlight1_desc')}</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/10 group animate-slideIn" style="animation-delay: 0.7s">
+                        <div class="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-solid fa-gift text-2xl text-cyan-400"></i></div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-2">${t('home.highlight2_title')}</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">${t('home.highlight2_desc')}</p>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 hover:border-pink-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-pink-500/10 group animate-slideIn" style="animation-delay: 0.8s">
+                        <div class="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"><i class="fa-solid fa-bolt text-2xl text-pink-400"></i></div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-2">${t('home.highlight3_title')}</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">${t('home.highlight3_desc')}</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    `;
+}
+function renderHelp() {
+    const commands = [
+        { name: '/set_channel', admin: true, desc: t('help.cmd_set_channel') },
+        { name: '/edit_personality', admin: true, desc: t('help.cmd_edit_personality') },
+        { name: '/manage_api_keys', admin: true, desc: t('help.cmd_manage_api_keys') },
+        { name: '/set_language', admin: true, desc: t('help.cmd_set_language') },
+        { name: '/reset_chat_history', admin: true, desc: t('help.cmd_reset_chat_history') },
+        { name: '/feedback', admin: false, desc: t('help.cmd_feedback') }
+    ];
+    const features = [
+        { icon: 'fa-solid fa-bolt', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'hover:border-yellow-500/40', title: t('help.feat1_title'), desc: t('help.feat1_desc') },
+        { icon: 'fa-solid fa-brain', color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'hover:border-violet-500/40', title: t('help.feat2_title'), desc: t('help.feat2_desc') },
+        { icon: 'fa-solid fa-masks-theater', color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'hover:border-pink-500/40', title: t('help.feat3_title'), desc: t('help.feat3_desc') },
+        { icon: 'fa-solid fa-heart', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-500/40', title: t('help.feat4_title'), desc: t('help.feat4_desc') },
+        { icon: 'fa-solid fa-paperclip', color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'hover:border-cyan-500/40', title: t('help.feat5_title'), desc: t('help.feat5_desc') },
+        { icon: 'fa-solid fa-rotate', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'hover:border-orange-500/40', title: t('help.feat6_title'), desc: t('help.feat6_desc') },
+        { icon: 'fa-solid fa-terminal', color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'hover:border-indigo-500/40', title: t('help.feat7_title'), desc: t('help.feat7_desc') }
+    ];
+    const faqs = [
+        { q: t('help.faq1_q'), a: t('help.faq1_a') },
+        { q: t('help.faq2_q'), a: t('help.faq2_a') },
+        { q: t('help.faq3_q'), a: t('help.faq3_a') }
+    ];
+    return `
+        <main class="max-w-5xl mx-auto px-4 py-10 md:py-12 w-full">
+            <div class="text-center mb-12 md:mb-16 animate-slideIn">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400 bg-clip-text text-transparent">${t('help.title')}</h1>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm md:text-base">${t('help.subtitle')}</p>
+            </div>
+            <section class="mb-12 md:mb-16 animate-slideIn" style="animation-delay: 0.1s">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center space-x-3 text-violet-400"><i class="fa-solid fa-terminal text-lg md:text-xl"></i><span>${t('help.commands_title')}</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    ${commands.map(cmd => `
+                        <div class="bg-slate-900/40 p-4 md:p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/5">
+                            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                                <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-xs md:text-sm">${cmd.name}</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider ${cmd.admin ? 'text-rose-400' : 'text-emerald-400'}">${cmd.admin ? t('help.admin_only') : t('help.everyone')}</span>
+                            </div>
+                            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">${cmd.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+            <section class="mb-12 md:mb-16 animate-slideIn" style="animation-delay: 0.2s">
+                <h2 class="text-xl md:text-2xl font-bold mb-2 flex items-center space-x-3 text-cyan-400"><i class="fa-solid fa-star text-lg md:text-xl"></i><span>${t('help.features_title')}</span></h2>
+                <p class="text-slate-400 text-sm md:text-base mb-6">${t('help.features_subtitle')}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${features.map(feat => `
+                        <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-5 md:p-6 ${feat.border} transition-all duration-500 hover:-translate-y-1 hover:shadow-xl group">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-11 h-11 ${feat.bg} rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300"><i class="${feat.icon} text-lg ${feat.color}"></i></div>
+                                <div><h3 class="text-base md:text-lg font-bold text-slate-100 mb-1">${feat.title}</h3><p class="text-slate-400 text-xs md:text-sm leading-relaxed">${feat.desc}</p></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+            <section class="mb-12 md:mb-16 animate-slideIn" style="animation-delay: 0.3s">
+                <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center space-x-3 text-pink-400"><i class="fa-solid fa-circle-exclamation text-lg md:text-xl"></i><span>${t('help.faq_title')}</span></h2>
+                <div class="space-y-3">
+                    ${faqs.map((faq, idx) => `
+                        <div class="bg-slate-900/40 border rounded-xl overflow-hidden transition-all duration-500 ${openFaqIndex === idx ? 'border-pink-500/30 shadow-lg shadow-pink-500/5' : 'border-slate-800'}">
+                            <button onclick="toggleFaq(${idx})" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-medium text-slate-200 hover:bg-slate-800/30 transition-colors duration-200">
+                                <span class="pr-4 text-sm md:text-base">${faq.q}</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm shrink-0 ${openFaqIndex === idx ? 'rotate-180' : ''}"></i>
+                            </button>
+                            <div class="transition-all duration-500 ease-in-out overflow-hidden ${openFaqIndex === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}">
+                                <div class="p-4 md:p-5 border-t border-slate-800/80 bg-slate-950/40 text-slate-300 text-sm leading-relaxed">${faq.a}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </section>
+            <section class="text-center py-10 md:py-14 animate-slideIn" style="animation-delay: 0.4s">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-100 mb-6">${t('help.cta_title')}</h2>
+                <div class="relative group inline-block">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300"></div>
+                    <a href="${CONFIG.DISCORD_INVITE_URL}" target="_blank" rel="noopener noreferrer" class="relative px-8 py-4 md:px-10 md:py-5 bg-gradient-to-r from-violet-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 text-white font-bold text-base md:text-xl rounded-xl shadow-2xl transition duration-300 flex items-center space-x-3 transform group-hover:scale-[1.02]">
+                        <i class="fa-brands fa-discord text-xl md:text-2xl"></i>
+                        <span>${t('home.invite')}</span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    `;
+}
+function renderAbout() {
+    return `
+        <main class="max-w-4xl mx-auto px-4 py-10 md:py-16 flex flex-col items-center justify-center">
+            <div class="bg-slate-900/50 border border-slate-800 p-6 md:p-12 rounded-3xl w-full text-center relative overflow-hidden backdrop-blur-sm animate-slideIn">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-violet-500 via-pink-500 to-cyan-500 rounded-full"></div>
+                <div class="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-tr from-violet-600 to-pink-500 rounded-full mx-auto flex items-center justify-center text-3xl md:text-4xl font-extrabold text-white shadow-xl mb-6 animate-float">M</div>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-wide mb-2">${t('about.title_prefix')} <span class="text-violet-400">Merta</span></h1>
+                <p class="text-slate-400 font-mono text-xs md:text-sm mb-6 flex items-center justify-center space-x-1.5 flex-wrap"><i class="fa-brands fa-discord text-indigo-400"></i><span>${t('about.discord_handle')} <strong class="text-slate-200">${CONFIG.DISCORD_USERNAME}</strong></span></p>
+                <p class="text-slate-300 max-w-xl mx-auto leading-relaxed mb-8 text-sm md:text-base">${t('about.bio')}</p>
+                <div class="inline-flex items-center space-x-3 bg-violet-950/60 border border-violet-800/50 rounded-2xl px-4 md:px-5 py-3 mb-10 max-w-md text-left">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg md:text-xl text-pink-400 shrink-0"></i>
+                    <p class="text-xs text-violet-200 leading-normal"><strong class="text-white block font-semibold mb-0.5">${t('about.collab_title')}</strong>${t('about.collab_desc')} <span class="text-cyan-400 font-bold">Claude</span>.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-4">
+                    <a href="${CONFIG.YOUTUBE_URL}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:scale-[1.02]"><i class="fa-brands fa-youtube"></i><span>${t('about.youtube')}</span></a>
+                    <a href="#help" onclick="navigate('help'); return false;" class="w-full sm:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 border border-slate-700 hover:scale-[1.02]"><i class="fa-solid fa-book"></i><span>${t('about.docs')}</span></a>
+                </div>
+            </div>
+        </main>
+    `;
+}
+function renderPrivacy() {
+    const sections = [
+        { title: t('privacy.s1_title'), text: t('privacy.s1_text') },
+        { title: t('privacy.s2_title'), text: t('privacy.s2_text') },
+        { title: t('privacy.s3_title'), text: t('privacy.s3_text') },
+        { title: t('privacy.s4_title'), text: t('privacy.s4_text') }
+    ];
+    return `
+        <main class="max-w-3xl mx-auto px-4 py-10 md:py-16 w-full">
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-6 md:mb-8 text-violet-400 animate-slideIn">${t('privacy.title')}</h1>
+            <div class="space-y-6 text-slate-300 leading-relaxed text-sm">
+                <p class="text-slate-400 animate-slideIn" style="animation-delay: 0.1s">${t('privacy.updated')}</p>
+                ${sections.map((s, idx) => `
+                    <section class="animate-slideIn" style="animation-delay: ${(idx + 2) * 0.1}s">
+                        <h2 class="text-lg md:text-xl font-semibold mb-2 text-slate-100">${s.title}</h2>
+                        <p>${s.text}</p>
+                    </section>
+                `).join('')}
+            </div>
+        </main>
+    `;
+}
+function renderTerms() {
+    const sections = [
+        { title: t('terms.s1_title'), text: t('terms.s1_text') },
+        { title: t('terms.s2_title'), text: t('terms.s2_text') },
+        { title: t('terms.s3_title'), text: t('terms.s3_text') }
+    ];
+    return `
+        <main class="max-w-3xl mx-auto px-4 py-10 md:py-16 w-full">
+            <h1 class="text-2xl md:text-3xl font-extrabold mb-6 md:mb-8 text-cyan-400 animate-slideIn">${t('terms.title')}</h1>
+            <div class="space-y-6 text-slate-300 leading-relaxed text-sm">
+                <p class="text-slate-400 animate-slideIn" style="animation-delay: 0.1s">${t('terms.updated')}</p>
+                ${sections.map((s, idx) => `
+                    <section class="animate-slideIn" style="animation-delay: ${(idx + 2) * 0.1}s">
+                        <h2 class="text-lg md:text-xl font-semibold mb-2 text-slate-100">${s.title}</h2>
+                        <p>${s.text}</p>
+                    </section>
+                `).join('')}
+            </div>
+        </main>
+    `;
+}
+function renderFooter() {
+    document.getElementById('footer-container').innerHTML = `
+        <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-sm text-slate-500 backdrop-blur-sm">
+            <p>${t('footer.text')}</p>
+        </footer>
+    `;
+}
+function renderPage() {
+    renderNav();
+    let content = '';
+    switch(currentPage) {
+        case 'home': content = renderHome(); break;
+        case 'help': content = renderHelp(); break;
+        case 'about': content = renderAbout(); break;
+        case 'privacy': content = renderPrivacy(); break;
+        case 'terms': content = renderTerms(); break;
+        default: content = renderHome();
+    }
+    document.getElementById('content').innerHTML = content;
+    renderFooter();
+}
+// Benefit rotation for home page
+setInterval(() => {
+    if (currentPage === 'home') {
+        const benefits = t('benefits');
+        const elem = document.getElementById('benefit-text');
+        if (elem) {
+            elem.style.opacity = '0';
+            setTimeout(() => {
+                benefitIndex = (benefitIndex + 1) % benefits.length;
+                elem.textContent = benefits[benefitIndex];
+                elem.style.opacity = '1';
+            }, 500);
+        }
+    }
+}, 3500);
+// Handle hash routing
+function handleRoute() {
+    const hash = window.location.hash.slice(1) || 'home';
+    if (['home', 'help', 'about', 'privacy', 'terms'].includes(hash)) {
+        currentPage = hash;
+    } else {
+        currentPage = 'home';
+    }
+    renderPage();
+}
+window.addEventListener('hashchange', handleRoute);
+window.addEventListener('load', handleRoute);
+// Close menus on outside click
+document.addEventListener('click', (e) => {
+    if (langMenuOpen && !e.target.closest('.relative')) {
+        langMenuOpen = false;
+        renderNav();
+    }
+});
+</script>
+<div id="nav-container"></div>
+<div id="content" class="flex-grow"></div>
+<div id="footer-container"></div>
+</body>
 </html>
