@@ -31,9 +31,9 @@
      ============================================================ -->
 <script>
 const CONFIG = {
-    DISCORD_INVITE_URL: 'https://discord.com/oauth2/authorize?client_id=1516309601346129920&permissions=8&integration_type=0&scope=bot+applications.commands',
-    YOUTUBE_URL: 'https://www.youtube.com/@Merta.Studios',
-    DISCORD_USERNAME: '@_mertastudios'
+    DISCORD_INVITE_URL: 'YOUR_DISCORD_INVITE_URL_HERE',
+    YOUTUBE_URL: 'YOUR_YOUTUBE_CHANNEL_URL_HERE',
+    DISCORD_USERNAME: 'YOUR_DISCORD_USERNAME_HERE'
 };
 /* ============================================================
    ÜBERSETZUNGEN - HIER TEXTE ÄNDERN
@@ -307,8 +307,25 @@ function toggleLangMenu() {
     renderNav();
 }
 function toggleFaq(idx) {
+    const prevIndex = openFaqIndex;
     openFaqIndex = openFaqIndex === idx ? null : idx;
-    renderPage();
+    if (prevIndex !== null && prevIndex !== idx) {
+        const pItem = document.getElementById('faq-item-' + prevIndex);
+        const pIcon = document.getElementById('faq-icon-' + prevIndex);
+        const pContent = document.getElementById('faq-content-' + prevIndex);
+        if (pItem) pItem.className = 'bg-slate-900/40 border rounded-xl overflow-hidden transition-all duration-500 border-slate-800';
+        if (pIcon) pIcon.classList.remove('rotate-180');
+        if (pContent) pContent.className = 'transition-all duration-500 ease-in-out overflow-hidden max-h-0 opacity-0';
+    }
+    const cItem = document.getElementById('faq-item-' + idx);
+    const cIcon = document.getElementById('faq-icon-' + idx);
+    const cContent = document.getElementById('faq-content-' + idx);
+    if (cItem && cIcon && cContent) {
+        const isOpen = openFaqIndex === idx;
+        cItem.className = 'bg-slate-900/40 border rounded-xl overflow-hidden transition-all duration-500 ' + (isOpen ? 'border-pink-500/30 shadow-lg shadow-pink-500/5' : 'border-slate-800');
+        if (isOpen) cIcon.classList.add('rotate-180'); else cIcon.classList.remove('rotate-180');
+        cContent.className = 'transition-all duration-500 ease-in-out overflow-hidden ' + (isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0');
+    }
 }
 function renderSidebarLinks() {
     var linksContainer = document.getElementById('sidebar-links');
@@ -439,12 +456,12 @@ function renderHelp() {
                 <h2 class="text-xl md:text-2xl font-bold mb-6 flex items-center space-x-3 text-pink-400"><i class="fa-solid fa-circle-exclamation text-lg md:text-xl"></i><span>${t('help.faq_title')}</span></h2>
                 <div class="space-y-3">
                     ${faqs.map((faq, idx) => `
-                        <div class="bg-slate-900/40 border rounded-xl overflow-hidden transition-all duration-500 ${openFaqIndex === idx ? 'border-pink-500/30 shadow-lg shadow-pink-500/5' : 'border-slate-800'}">
+                        <div id="faq-item-${idx}" class="bg-slate-900/40 border rounded-xl overflow-hidden transition-all duration-500 ${openFaqIndex === idx ? 'border-pink-500/30 shadow-lg shadow-pink-500/5' : 'border-slate-800'}">
                             <button onclick="toggleFaq(${idx})" class="w-full flex justify-between items-center p-4 md:p-5 text-left font-medium text-slate-200 hover:bg-slate-800/30 transition-colors duration-200">
                                 <span class="pr-4 text-sm md:text-base">${faq.q}</span>
-                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm shrink-0 ${openFaqIndex === idx ? 'rotate-180' : ''}"></i>
+                                <i id="faq-icon-${idx}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm shrink-0 ${openFaqIndex === idx ? 'rotate-180' : ''}"></i>
                             </button>
-                            <div class="transition-all duration-500 ease-in-out overflow-hidden ${openFaqIndex === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}">
+                            <div id="faq-content-${idx}" class="transition-all duration-500 ease-in-out overflow-hidden ${openFaqIndex === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}">
                                 <div class="p-4 md:p-5 border-t border-slate-800/80 bg-slate-950/40 text-slate-300 text-sm leading-relaxed">${faq.a}</div>
                             </div>
                         </div>
