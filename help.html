@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova AI - Features & Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary i { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between font-sans selection:bg-violet-500 selection:text-white">
+
+    <nav class="border-b border-slate-800/80 bg-[#0b0f19]/70 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2 text-xl font-bold tracking-wider hover:opacity-90 transition">
+                <span class="text-2xl">🌙</span>
+                <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
+            </a>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="index.html" class="text-slate-400 hover:text-violet-400 transition">Home</a>
+                <a href="help.html" class="text-violet-400 transition">Features & Help</a>
+                <a href="about.html" class="text-slate-400 hover:text-violet-400 transition">About & Contact</a>
+                <a href="privacy.html" class="text-slate-400 hover:text-violet-400 transition">Privacy</a>
+                <a href="terms.html" class="text-slate-400 hover:text-violet-400 transition">Terms</a>
+            </div>
+            <div class="md:hidden flex space-x-4 text-sm">
+                <a href="help.html" class="text-violet-400"><i class="fa-solid fa-circle-question"></i></a>
+                <a href="about.html" class="text-slate-400 hover:text-violet-400"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 py-12 flex-grow w-full">
+        
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-violet-400 via-indigo-200 to-cyan-400 bg-clip-text text-transparent">Features & Commands</h1>
+            <p class="text-slate-400 max-w-xl mx-auto">Master Nova AI. Explore configuration commands, custom content processors, and diagnostic solutions below.</p>
+        </div>
+
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center space-x-3 text-violet-400">
+                <i class="fa-solid fa-terminal text-xl"></i>
+                <span>Slash Commands</span>
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/set_channel</span>
+                        <span class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Admin Only</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Designates an automated AI chat channel. Inside this channel, Nova AI responds instantly to every message without needing a ping.</p>
+                </div>
+
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/edit_personality</span>
+                        <span class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Admin Only</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Switches the AI personality template (e.g., Gamer Nerd, Dramatic Diva) or opens a custom modal form for custom prompts.</p>
+                </div>
+
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/manage_api_keys</span>
+                        <span class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Admin Only</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Opens an ephemeral control panel to register, delete, or rotate multiple Groq API keys with built-in localized tutorials.</p>
+                </div>
+
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/set_language</span>
+                        <span class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Admin Only</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Changes the global localization setting (English or German supported out of the box). Updates embed styles and prompt handling.</p>
+                </div>
+
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/reset_chat_history</span>
+                        <span class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Admin Only</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Wipes the conversational memory buffer completely clean for the active server channel to start a fresh sequence.</p>
+                </div>
+
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800 hover:border-violet-500/40 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2.5 py-1 rounded text-sm">/feedback</span>
+                        <span class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Everyone</span>
+                    </div>
+                    <p class="text-slate-300 text-sm">Launches a direct developer modal interface. Submissions safely route straight to Merta. Global 3-hour cooldown applies per user.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="mb-16 bg-slate-900/20 p-6 md:p-8 rounded-2xl border border-slate-800">
+            <h2 class="text-2xl font-bold mb-6 flex items-center space-x-3 text-cyan-400">
+                <i class="fa-solid fa-brain text-xl"></i>
+                <span>Advanced Context Sanitation</span>
+            </h2>
+            <p class="text-slate-300 mb-6 leading-relaxed">
+                Nova AI processes chat flows to give the LLM structural awareness. Discord assets, structural layouts, and formatting features get systematically parsed before processing:
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center font-mono text-xs">
+                <div class="p-3 bg-slate-950 rounded border border-slate-800/60"><span class="text-violet-400 font-bold">Images</span> &rarr; *Sent an image*</div>
+                <div class="p-3 bg-slate-950 rounded border border-slate-800/60"><span class="text-violet-400 font-bold">Stickers</span> &rarr; Sent sticker 'Name'</div>
+                <div class="p-3 bg-slate-950 rounded border border-slate-800/60"><span class="text-violet-400 font-bold">Replies</span> &rarr; Replied to 'User'</div>
+                <div class="p-3 bg-slate-950 rounded border border-slate-800/60"><span class="text-violet-400 font-bold">Mentions</span> &rarr; mapped to Display Names</div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-6 flex items-center space-x-3 text-pink-400">
+                <i class="fa-solid fa-circle-exclamation text-xl"></i>
+                <span>Troubleshooting & FAQ</span>
+            </h2>
+            <div class="space-y-4">
+
+                <details class="group bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300 open:border-pink-500/30">
+                    <summary class="flex justify-between items-center p-5 cursor-pointer font-medium list-none text-slate-200 select-none hover:bg-slate-800/30">
+                        <span>How do we resolve Groq API Rate Limits or "429 Too Many Requests"?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm"></i>
+                    </summary>
+                    <div class="p-5 border-t border-slate-800/80 bg-slate-950/40 text-slate-300 text-sm leading-relaxed space-y-2">
+                        <p>Nova AI comes standard with built-in <strong class="text-cyan-400">Key-Rotation Automation</strong>.</p>
+                        <p>If you face persistent rate limits, run <code class="bg-slate-900 px-1 py-0.5 rounded text-pink-400">/manage_api_keys</code> and register multiple keys. The system rotates to a fresh backup instantly when an active token encounters a rate limit block.</p>
+                    </div>
+                </details>
+
+                <details class="group bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300 open:border-pink-500/30">
+                    <summary class="flex justify-between items-center p-5 cursor-pointer font-medium list-none text-slate-200 select-none hover:bg-slate-800/30">
+                        <span>The Bot is online but not reading messages or usernames. Why?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm"></i>
+                    </summary>
+                    <div class="p-5 border-t border-slate-800/80 bg-slate-950/40 text-slate-300 text-sm leading-relaxed">
+                        You likely skipped mandatory Privileged Gateway Intents during creation in the Discord Developer Portal. Access your application profile, navigate to the <strong class="text-violet-400">Bot</strong> tab, scroll down, and manually switch on both <strong class="text-slate-100">Message Content Intent</strong> and <strong class="text-slate-100">Server Members Intent</strong>.
+                    </div>
+                </details>
+
+                <details class="group bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden transition-all duration-300 open:border-pink-500/30">
+                    <summary class="flex justify-between items-center p-5 cursor-pointer font-medium list-none text-slate-200 select-none hover:bg-slate-800/30">
+                        <span>What is Server Concurrency and why did my warning text disappear?</span>
+                        <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm"></i>
+                    </summary>
+                    <div class="p-5 border-t border-slate-800/80 bg-slate-950/40 text-slate-300 text-sm leading-relaxed">
+                        To preserve system stability, Nova AI only builds one reply per server simultaneously. If you ping Nova while it's already constructing a response, a temporary warning message pings you. For chat security and cleanliness, this alert auto-deletes itself via system scripts exactly 5 seconds later.
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-sm text-slate-500">
+        <p>&copy; 2026 Nova AI. Crafted beautifully by Merta. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
