@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova AI - The Ultimate Discord Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; filter: drop-shadow(0 0 35px rgba(139, 92, 246, 0.7)); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-glow { animation: pulseGlow 4s ease-in-out infinite; }
+        .text-gradient {
+            background: linear-gradient(to right, #a78bfa, #f472b6, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between font-sans overflow-x-hidden selection:bg-violet-500 selection:text-white">
+
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-900/20 rounded-full blur-[150px] pointer-events-none"></div>
+
+    <nav class="border-b border-slate-800/80 bg-[#0b0f19]/70 backdrop-blur-md sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2 text-xl font-bold tracking-wider hover:opacity-90 transition">
+                <span class="text-2xl animate-pulse">🌙</span>
+                <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
+            </a>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="index.html" class="text-violet-400 transition">Home</a>
+                <a href="help.html" class="text-slate-400 hover:text-violet-400 transition">Features & Help</a>
+                <a href="about.html" class="text-slate-400 hover:text-violet-400 transition">About & Contact</a>
+                <a href="privacy.html" class="text-slate-400 hover:text-violet-400 transition">Privacy</a>
+                <a href="terms.html" class="text-slate-400 hover:text-violet-400 transition">Terms</a>
+            </div>
+            <div class="md:hidden flex space-x-4 text-sm">
+                <a href="help.html" class="text-slate-400 hover:text-violet-400"><i class="fa-solid fa-circle-question"></i></a>
+                <a href="about.html" class="text-slate-400 hover:text-violet-400"><i class="fa-solid fa-user"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-16 flex-grow flex flex-col items-center justify-center text-center relative z-10">
+        
+        <div class="relative mb-10 group">
+            <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full blur-2xl opacity-40 animate-glow"></div>
+            <div class="w-40 h-40 bg-slate-900/90 border-2 border-violet-500/40 rounded-full flex items-center justify-center text-7xl shadow-2xl animate-float transition-all duration-300 group-hover:border-cyan-400/60">
+                🌙
+            </div>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+            Meet <span class="bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">Nova AI</span>
+        </h1>
+
+        <div class="h-16 md:h-20 flex items-center justify-center mb-12">
+            <p id="benefit-text" class="text-xl md:text-3xl font-medium text-slate-300 opacity-0 transition-opacity duration-500 text-gradient font-mono">
+                </p>
+        </div>
+
+        <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 rounded-xl blur-lg opacity-75 group-hover:opacity-100 transition duration-300 group-hover:duration-200"></div>
+            <a href="YOUR_DISCORD_INVITE_URL_HERE" target="_blank" class="relative px-10 py-5 bg-gradient-to-r from-violet-600 to-indigo-700 hover:from-violet-500 hover:to-indigo-600 text-white font-bold text-xl rounded-xl shadow-2xl transition duration-300 flex items-center space-x-3 transform group-hover:scale-[1.02]">
+                <i class="fa-brands fa-discord text-2xl"></i>
+                <span>Invite Nova AI to Your Server</span>
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-900 bg-slate-950/60 py-6 text-center text-sm text-slate-500 backdrop-blur-sm">
+        <p>&copy; 2026 Nova AI. Crafted beautifully by Merta. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const benefits = [
+            "Not just another soulless tool.",
+            "Dynamic Server Personalities.",
+            "Intelligent Context-Aware Parsing.",
+            "Automated API Key Rotation.",
+            "Full Multi-Language Support.",
+            "100% Privacy & On-Leave Wiping."
+        ];
+        let index = 0;
+        const textElem = document.getElementById('benefit-text');
+
+        function rotateText() {
+            textElem.style.opacity = 0;
+            setTimeout(() => {
+                textElem.textContent = benefits[index];
+                textElem.style.opacity = 1;
+                index = (index + 1) % benefits.length;
+            }, 500);
+        }
+        
+        rotateText();
+        setInterval(rotateText, 3500);
+    </script>
+</body>
+</html>
