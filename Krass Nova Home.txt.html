@@ -1,0 +1,2544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#080312" />
+    <meta name="description" content="Nova AI is a free, fast and personality-driven AI chatbot for Discord communities." />
+    <meta property="og:title" content="Nova AI - Discord AI Chatbot" />
+    <meta property="og:description" content="A powerful Discord AI chatbot with memory, custom personalities, multi-language support and API key rotation." />
+    <meta property="og:type" content="website" />
+    <title>Nova AI - Discord AI Chatbot</title>
+
+    <!-- External resources are optional. The page is fully styled with the inline CSS below as well. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --nova-black: #040208;
+            --nova-black-2: #07030d;
+            --nova-deep: #0b0416;
+            --nova-panel: rgba(18, 9, 35, 0.74);
+            --nova-panel-strong: rgba(26, 13, 49, 0.92);
+            --nova-panel-soft: rgba(255, 255, 255, 0.045);
+            --nova-border: rgba(197, 155, 255, 0.18);
+            --nova-border-strong: rgba(197, 155, 255, 0.44);
+            --nova-violet: #9b5cff;
+            --nova-violet-2: #7b3fff;
+            --nova-violet-bright: #c59bff;
+            --nova-violet-soft: rgba(155, 92, 255, 0.16);
+            --nova-pink: #ff4fd8;
+            --nova-pink-soft: rgba(255, 79, 216, 0.18);
+            --nova-cyan: #43e7ff;
+            --nova-cyan-soft: rgba(67, 231, 255, 0.16);
+            --nova-lime: #b6ff6d;
+            --nova-lilac: #f1e8ff;
+            --nova-text: #f8f4ff;
+            --nova-muted: #b9abd8;
+            --nova-muted-2: #82769d;
+            --nova-danger: #fb7185;
+            --nova-success: #34d399;
+            --nova-warning: #fbbf24;
+            --shadow-violet: 0 24px 90px rgba(155, 92, 255, 0.20);
+            --shadow-black: 0 25px 70px rgba(0, 0, 0, 0.45);
+            --radius-xl: 24px;
+            --radius-2xl: 32px;
+            --radius-pill: 999px;
+            --nav-height: 74px;
+            --content-width: 1180px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            color: var(--nova-text);
+            background:
+                radial-gradient(circle at 50% -15%, rgba(155, 92, 255, 0.38), transparent 34rem),
+                radial-gradient(circle at 12% 18%, rgba(255, 79, 216, 0.12), transparent 26rem),
+                radial-gradient(circle at 88% 22%, rgba(67, 231, 255, 0.12), transparent 26rem),
+                linear-gradient(180deg, #05020a 0%, #080312 46%, #040208 100%);
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body.menu-locked {
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -6;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+                radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 20%), rgba(197, 155, 255, 0.18), transparent 24rem);
+            background-size: 70px 70px, 70px 70px, auto;
+            mask-image: radial-gradient(circle at center, black 0 58%, transparent 100%);
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            pointer-events: none;
+            opacity: 0.075;
+            mix-blend-mode: overlay;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.55) 0,
+                rgba(255, 255, 255, 0.55) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        ::selection {
+            background: var(--nova-violet);
+            color: #07020d;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #05020a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: var(--radius-pill);
+            background: linear-gradient(180deg, var(--nova-violet), var(--nova-pink));
+        }
+
+        .font-display {
+            font-family: 'Anton', 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.012em;
+        }
+
+        .font-tick {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+        }
+
+        .container {
+            width: min(var(--content-width), calc(100% - 32px));
+            margin-inline: auto;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(28px) scale(0.985);
+                filter: blur(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes floatCore {
+            0%, 100% {
+                transform: translateY(0) rotate(-2deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(4deg);
+            }
+        }
+
+        @keyframes orbitOne {
+            from {
+                transform: rotate(0deg) translateX(76px) rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg) translateX(76px) rotate(-360deg);
+            }
+        }
+
+        @keyframes orbitTwo {
+            from {
+                transform: rotate(160deg) translateX(96px) rotate(-160deg);
+            }
+            to {
+                transform: rotate(520deg) translateX(96px) rotate(-520deg);
+            }
+        }
+
+        @keyframes orbitThree {
+            from {
+                transform: rotate(40deg) translateX(116px) rotate(-40deg);
+            }
+            to {
+                transform: rotate(400deg) translateX(116px) rotate(-400deg);
+            }
+        }
+
+        @keyframes pulseRing {
+            0%, 100% {
+                transform: scale(0.92);
+                opacity: 0.58;
+            }
+            50% {
+                transform: scale(1.22);
+                opacity: 0.12;
+            }
+        }
+
+        @keyframes megaGlow {
+            0%, 100% {
+                opacity: 0.52;
+                filter: blur(24px);
+            }
+            50% {
+                opacity: 1;
+                filter: blur(34px);
+            }
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes auroraDrift {
+            0%, 100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            33% {
+                transform: translate3d(5%, -4%, 0) scale(1.08);
+            }
+            66% {
+                transform: translate3d(-4%, 4%, 0) scale(0.95);
+            }
+        }
+
+        @keyframes shimmerText {
+            0% {
+                background-position: -220% 0;
+            }
+            100% {
+                background-position: 220% 0;
+            }
+        }
+
+        @keyframes scanLine {
+            0% {
+                transform: translateY(-125%);
+            }
+            100% {
+                transform: translateY(125%);
+            }
+        }
+
+        @keyframes rotateGradient {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes particleRise {
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 24px, 0) scale(0.7);
+            }
+            15% {
+                opacity: 0.85;
+            }
+            100% {
+                opacity: 0;
+                transform: translate3d(var(--particle-drift, 0px), -110vh, 0) scale(1.2);
+            }
+        }
+
+        @keyframes electricFlicker {
+            0%, 100% {
+                opacity: 0.35;
+            }
+            20% {
+                opacity: 0.85;
+            }
+            22% {
+                opacity: 0.25;
+            }
+            45% {
+                opacity: 0.7;
+            }
+            47% {
+                opacity: 0.18;
+            }
+            80% {
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes popSoft {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.035);
+            }
+        }
+
+        .animate-slide {
+            opacity: 0;
+            animation: slideUp 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.28s ease-out both;
+        }
+
+        .gradient-text {
+            color: transparent;
+            background: linear-gradient(
+                90deg,
+                #ffffff,
+                var(--nova-violet-bright),
+                var(--nova-cyan),
+                var(--nova-pink),
+                #ffffff
+            );
+            background-size: 260% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmerText 8s linear infinite;
+        }
+
+        .text-stroke {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--nova-violet-bright);
+            text-shadow: 0 0 35px rgba(197, 155, 255, 0.22);
+        }
+
+        .nav-shell {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid rgba(197, 155, 255, 0.15);
+            background: rgba(4, 2, 8, 0.78);
+            backdrop-filter: blur(20px);
+        }
+
+        .nav-inner {
+            min-height: var(--nav-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hamburger-button {
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            border-radius: 14px;
+            color: #d8cff0;
+            background: transparent;
+            cursor: pointer;
+            transition: 0.24s ease;
+        }
+
+        .hamburger-button:hover {
+            color: var(--nova-violet-bright);
+            border-color: rgba(197, 155, 255, 0.20);
+            background: rgba(255, 255, 255, 0.045);
+        }
+
+        .hamburger-lines {
+            width: 24px;
+            height: 18px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hamburger-line {
+            display: block;
+            height: 2px;
+            width: 24px;
+            border-radius: 999px;
+            background: currentColor;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .menu-open .hamburger-line:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .menu-open .hamburger-line:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .menu-open .hamburger-line:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .brand-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .brand-link:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .brand-orb {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            border: 1px solid rgba(197, 155, 255, 0.32);
+            background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.25), rgba(155, 92, 255, 0.12));
+            box-shadow: 0 0 28px rgba(155, 92, 255, 0.16);
+        }
+
+        .brand-text {
+            font-family: 'Anton', 'Inter', sans-serif;
+            text-transform: uppercase;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+            color: var(--nova-lilac);
+        }
+
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px;
+            border: 1px solid rgba(197, 155, 255, 0.10);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .desktop-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            color: #b9abd8;
+            font-size: 13px;
+            font-weight: 800;
+            transition: 0.22s ease;
+        }
+
+        .desktop-nav-link:hover,
+        .desktop-nav-link.active {
+            color: #ffffff;
+            background: rgba(197, 155, 255, 0.12);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .language-wrap {
+            position: relative;
+        }
+
+        .language-button {
+            min-width: 54px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(197, 155, 255, 0.12);
+            border-radius: 15px;
+            color: #e9ddff;
+            background: rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: 0.22s ease;
+        }
+
+        .language-button:hover {
+            border-color: rgba(197, 155, 255, 0.32);
+            background: rgba(197, 155, 255, 0.10);
+        }
+
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            z-index: 70;
+            width: 220px;
+            max-height: min(470px, calc(100vh - 110px));
+            overflow: auto;
+            padding: 8px;
+            border: 1px solid rgba(197, 155, 255, 0.22);
+            border-radius: 20px;
+            background: rgba(13, 6, 25, 0.96);
+            box-shadow: var(--shadow-black);
+            backdrop-filter: blur(20px);
+        }
+
+        .language-option {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 12px;
+            border: 0;
+            border-radius: 14px;
+            color: #d7cdec;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.18s ease;
+        }
+
+        .language-option:hover,
+        .language-option.active {
+            color: white;
+            background: rgba(155, 92, 255, 0.14);
+        }
+
+        .ticker-wrap {
+            position: relative;
+            z-index: 30;
+            overflow: hidden;
+            white-space: nowrap;
+            transform: skewY(-1deg);
+            border-top: 2px solid rgba(0, 0, 0, 0.28);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.28);
+            background: linear-gradient(90deg, var(--nova-violet-bright), #ff9eea, var(--nova-cyan));
+        }
+
+        .ticker-track {
+            display: inline-flex;
+            width: max-content;
+            animation: marquee 25s linear infinite;
+            transform: skewY(1deg);
+            color: #07020d;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 0.22em;
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 9px 0;
+        }
+
+        .ticker-icon {
+            margin: 0 26px;
+            font-size: 10px;
+        }
+
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+            min-height: calc(100vh - var(--nav-height));
+            padding: 58px 0 92px;
+        }
+
+        .aurora-layer {
+            position: absolute;
+            inset: -18rem -10rem auto -10rem;
+            height: 48rem;
+            pointer-events: none;
+            z-index: -4;
+            opacity: 0.72;
+            filter: blur(44px);
+        }
+
+        .aurora-blob {
+            position: absolute;
+            border-radius: 999px;
+            animation: auroraDrift 14s ease-in-out infinite;
+        }
+
+        .aurora-blob.one {
+            width: 38rem;
+            height: 38rem;
+            left: 8%;
+            top: 9%;
+            background: rgba(155, 92, 255, 0.36);
+        }
+
+        .aurora-blob.two {
+            width: 34rem;
+            height: 34rem;
+            right: 6%;
+            top: 0;
+            background: rgba(255, 79, 216, 0.24);
+            animation-delay: -4s;
+        }
+
+        .aurora-blob.three {
+            width: 30rem;
+            height: 30rem;
+            left: 38%;
+            top: 18%;
+            background: rgba(67, 231, 255, 0.18);
+            animation-delay: -8s;
+        }
+
+        .particle-field {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -3;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -30px;
+            width: var(--particle-size, 3px);
+            height: var(--particle-size, 3px);
+            left: var(--particle-left, 50%);
+            border-radius: 50%;
+            background: var(--particle-color, var(--nova-violet-bright));
+            box-shadow: 0 0 14px currentColor;
+            animation: particleRise var(--particle-speed, 14s) linear infinite;
+            animation-delay: var(--particle-delay, 0s);
+            opacity: 0;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            align-items: center;
+            justify-items: center;
+            text-align: center;
+            gap: 28px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 15px;
+            margin-bottom: 26px;
+            border: 1px solid rgba(197, 155, 255, 0.24);
+            border-radius: 999px;
+            color: var(--nova-violet-bright);
+            background: rgba(255, 255, 255, 0.035);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--nova-cyan);
+            box-shadow: 0 0 16px var(--nova-cyan);
+            animation: popSoft 1.8s ease-in-out infinite;
+        }
+
+        .hero-title {
+            margin: 0;
+            font-family: 'Anton', 'Inter', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(3.5rem, 13vw, 10.2rem);
+            line-height: 0.82;
+            letter-spacing: 0.01em;
+        }
+
+        .hero-subtitle {
+            max-width: 780px;
+            margin: 24px auto 0;
+            color: #f3edff;
+            font-size: clamp(1.08rem, 2.5vw, 1.6rem);
+            line-height: 1.35;
+            font-weight: 900;
+        }
+
+        .hero-description {
+            max-width: 700px;
+            margin: 16px auto 0;
+            color: var(--nova-muted);
+            font-size: 15px;
+            line-height: 1.78;
+        }
+
+        .nova-orb-stage {
+            position: relative;
+            width: 210px;
+            height: 210px;
+            display: grid;
+            place-items: center;
+            margin: 18px auto 0;
+        }
+
+        .orb-glow {
+            position: absolute;
+            inset: 24px;
+            border-radius: 50%;
+            background: var(--nova-violet);
+            opacity: 0.58;
+            animation: megaGlow 4s ease-in-out infinite;
+        }
+
+        .orb-ring {
+            position: absolute;
+            inset: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(197, 155, 255, 0.32);
+            animation: pulseRing 3.4s ease-in-out infinite;
+        }
+
+        .orb-ring.second {
+            inset: -10px;
+            border-color: rgba(67, 231, 255, 0.14);
+            animation-delay: -1.1s;
+        }
+
+        .orb-ring.third {
+            inset: -34px;
+            border-color: rgba(255, 79, 216, 0.12);
+            animation-delay: -2.2s;
+        }
+
+        .holo-border {
+            position: relative;
+            isolation: isolate;
+        }
+
+        .holo-border::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            z-index: -1;
+            border-radius: inherit;
+            opacity: 0.72;
+            background: conic-gradient(
+                from 0deg,
+                transparent,
+                var(--nova-violet),
+                var(--nova-pink),
+                var(--nova-cyan),
+                var(--nova-violet),
+                transparent
+            );
+            filter: blur(12px);
+            animation: rotateGradient 7s linear infinite;
+        }
+
+        .nova-core {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background:
+                radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.24) 10%, transparent 18%),
+                radial-gradient(circle at 65% 72%, rgba(67, 231, 255, 0.78), transparent 20%),
+                linear-gradient(135deg, rgba(197, 155, 255, 0.94), rgba(155, 92, 255, 0.24) 46%, rgba(255, 79, 216, 0.68));
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                0 28px 85px rgba(155, 92, 255, 0.25);
+            animation: floatCore 6s ease-in-out infinite;
+        }
+
+        .nova-core::after {
+            content: '';
+            position: absolute;
+            inset: 16%;
+            border-radius: 50%;
+            background: rgba(6, 2, 13, 0.86);
+            transform: translateX(18%);
+            box-shadow: inset 13px 0 19px rgba(255, 255, 255, 0.035);
+        }
+
+        .core-moon {
+            position: relative;
+            z-index: 3;
+            font-size: 72px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.35));
+        }
+
+        .scanner {
+            position: absolute;
+            inset: -42%;
+            z-index: 2;
+            pointer-events: none;
+            background: linear-gradient(180deg, transparent, rgba(67, 231, 255, 0.22), transparent);
+            animation: scanLine 4s linear infinite;
+        }
+
+        .orbit-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            transform-origin: center;
+        }
+
+        .orbit-dot.one {
+            width: 13px;
+            height: 13px;
+            margin: -6.5px 0 0 -6.5px;
+            background: var(--nova-cyan);
+            box-shadow: 0 0 18px var(--nova-cyan);
+            animation: orbitOne 7s linear infinite;
+        }
+
+        .orbit-dot.two {
+            width: 10px;
+            height: 10px;
+            margin: -5px 0 0 -5px;
+            background: var(--nova-pink);
+            box-shadow: 0 0 18px var(--nova-pink);
+            animation: orbitTwo 10s linear infinite;
+        }
+
+        .orbit-dot.three {
+            width: 8px;
+            height: 8px;
+            margin: -4px 0 0 -4px;
+            background: var(--nova-lime);
+            box-shadow: 0 0 18px var(--nova-lime);
+            animation: orbitThree 13s linear infinite;
+        }
+
+        .benefit-box {
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto 26px;
+        }
+
+        .benefit-text {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 900;
+            font-size: clamp(1rem, 2.7vw, 1.55rem);
+            line-height: 1.35;
+            transition: opacity 0.42s ease, transform 0.42s ease;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            margin: 0 auto 54px;
+        }
+
+        .button {
+            position: relative;
+            isolation: isolate;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-height: 58px;
+            padding: 0 28px;
+            border-radius: 20px;
+            border: 1px solid transparent;
+            overflow: hidden;
+            font-family: 'Anton', 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.035em;
+            font-size: 17px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            transform: translateX(-140%);
+            background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+            transition: transform 0.7s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px) scale(1.025);
+        }
+
+        .button:hover::before {
+            transform: translateX(140%);
+        }
+
+        .button-primary {
+            color: #07020d;
+            background: linear-gradient(90deg, var(--nova-violet-bright), #ffa7ed, #a7f3ff);
+            box-shadow: 0 20px 64px rgba(155, 92, 255, 0.34);
+        }
+
+        .button-secondary {
+            color: var(--nova-lilac);
+            border-color: rgba(197, 155, 255, 0.35);
+            background: linear-gradient(135deg, rgba(18, 9, 35, 0.96), rgba(31, 14, 57, 0.94));
+            box-shadow: 0 20px 64px rgba(0, 0, 0, 0.35);
+        }
+
+        .button-ghost {
+            color: var(--nova-lilac);
+            border-color: rgba(197, 155, 255, 0.22);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: min(900px, 100%);
+            margin: 0 auto 30px;
+        }
+
+        .stat-tile {
+            padding: 16px 14px;
+            border: 1px solid rgba(197, 155, 255, 0.16);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.035);
+            backdrop-filter: blur(12px);
+        }
+
+        .stat-value {
+            display: block;
+            font-family: 'Anton', sans-serif;
+            font-size: 26px;
+            color: var(--nova-lilac);
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 4px;
+            color: var(--nova-muted-2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .section {
+            padding: 72px 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 26px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(197, 155, 255, 0.16);
+        }
+
+        .section-title {
+            margin: 0;
+            font-family: 'Anton', 'Inter', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(2.45rem, 7vw, 5.4rem);
+            line-height: 0.9;
+            color: var(--nova-lilac);
+        }
+
+        .section-subtitle {
+            max-width: 720px;
+            color: var(--nova-muted);
+            line-height: 1.7;
+            margin: 12px 0 0;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .cards-grid.two {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .nova-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(197, 155, 255, 0.16);
+            border-radius: 28px;
+            background: linear-gradient(145deg, rgba(22, 10, 43, 0.84), rgba(8, 4, 16, 0.76));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--shadow-black);
+            backdrop-filter: blur(15px);
+            transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .nova-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            background: radial-gradient(circle at var(--card-x, 50%) var(--card-y, 50%), rgba(197, 155, 255, 0.25), transparent 38%);
+        }
+
+        .nova-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(197, 155, 255, 0.50);
+            box-shadow: 0 30px 90px rgba(155, 92, 255, 0.16);
+        }
+
+        .nova-card:hover::before {
+            opacity: 1;
+        }
+
+        .highlight-card {
+            padding: 26px;
+            text-align: left;
+        }
+
+        .feature-card {
+            padding: 24px;
+        }
+
+        .command-card {
+            padding: 22px;
+        }
+
+        .icon-box {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 18px;
+            border: 1px solid rgba(197, 155, 255, 0.22);
+            border-radius: 18px;
+            color: var(--nova-violet-bright);
+            background: rgba(155, 92, 255, 0.12);
+            font-size: 22px;
+        }
+
+        .card-title {
+            position: relative;
+            margin: 0 0 9px;
+            color: var(--nova-lilac);
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .card-text {
+            position: relative;
+            margin: 0;
+            color: var(--nova-muted);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .command-head {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .command-name {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 11px;
+            border-radius: 12px;
+            color: var(--nova-violet-bright);
+            background: rgba(155, 92, 255, 0.15);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 900;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .badge.admin {
+            color: var(--nova-danger);
+        }
+
+        .badge.everyone {
+            color: var(--nova-success);
+        }
+
+        .feature-layout {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .feature-number {
+            position: relative;
+            color: rgba(197, 155, 255, 0.45);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            padding-top: 4px;
+        }
+
+        .faq-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .faq-item {
+            border-radius: 22px;
+        }
+
+        .faq-button {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 18px 20px;
+            border: 0;
+            color: var(--nova-lilac);
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+            font-weight: 900;
+        }
+
+        .faq-icon {
+            color: var(--nova-violet-bright);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-content {
+            position: relative;
+            z-index: 2;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.42s ease, opacity 0.3s ease;
+        }
+
+        .faq-item.open .faq-content {
+            max-height: 720px;
+            opacity: 1;
+        }
+
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: var(--nova-muted);
+            line-height: 1.75;
+            font-size: 14px;
+        }
+
+        .faq-answer-inner {
+            padding-top: 18px;
+            border-top: 1px solid rgba(197, 155, 255, 0.14);
+        }
+
+        .cta-panel {
+            position: relative;
+            overflow: hidden;
+            padding: 42px 24px;
+            text-align: center;
+            border: 1px solid rgba(197, 155, 255, 0.20);
+            border-radius: 34px;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(155, 92, 255, 0.20), transparent 34%),
+                radial-gradient(circle at 70% 30%, rgba(67, 231, 255, 0.12), transparent 32%),
+                rgba(255, 255, 255, 0.035);
+        }
+
+        .cta-title {
+            margin: 0 0 22px;
+            font-family: 'Anton', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 0.95;
+            color: var(--nova-lilac);
+        }
+
+        .cta-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .about-card {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 34px;
+            text-align: center;
+        }
+
+        .avatar-orb {
+            width: 118px;
+            height: 118px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(197, 155, 255, 0.35);
+            color: var(--nova-violet-bright);
+            background: rgba(155, 92, 255, 0.12);
+            font-family: 'Anton', sans-serif;
+            font-size: 46px;
+            box-shadow: var(--shadow-violet);
+            animation: floatCore 6s ease-in-out infinite;
+        }
+
+        .about-title {
+            margin: 0 0 10px;
+            font-family: 'Anton', sans-serif;
+            text-transform: uppercase;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            line-height: 0.95;
+        }
+
+        .about-handle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 24px;
+            color: var(--nova-muted);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+        }
+
+        .about-bio {
+            max-width: 650px;
+            margin: 0 auto 26px;
+            color: #ddd3f5;
+            line-height: 1.75;
+        }
+
+        .ai-stack-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            max-width: 540px;
+            padding: 15px 18px;
+            margin: 0 auto 30px;
+            border: 1px solid rgba(197, 155, 255, 0.22);
+            border-radius: 20px;
+            color: #dccbff;
+            background: rgba(155, 92, 255, 0.12);
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .legal-stack {
+            display: grid;
+            gap: 16px;
+        }
+
+        .legal-card {
+            padding: 24px;
+        }
+
+        .legal-card h2 {
+            position: relative;
+            margin: 0 0 10px;
+            color: var(--nova-violet-bright);
+            font-size: 20px;
+        }
+
+        .legal-card p {
+            position: relative;
+            margin: 0;
+            color: var(--nova-muted);
+            line-height: 1.75;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 90;
+            background: rgba(0, 0, 0, 0.70);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease;
+        }
+
+        .sidebar-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            width: 330px;
+            max-width: 86vw;
+            height: 100vh;
+            border-right: 1px solid rgba(197, 155, 255, 0.20);
+            background: rgba(7, 3, 14, 0.96);
+            backdrop-filter: blur(26px);
+            box-shadow: 30px 0 80px rgba(0, 0, 0, 0.45);
+            transform: translateX(-105%);
+            transition: transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px;
+            border-bottom: 1px solid rgba(197, 155, 255, 0.14);
+        }
+
+        .sidebar-close {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(197, 155, 255, 0.12);
+            border-radius: 14px;
+            color: #d6c9ef;
+            background: rgba(255, 255, 255, 0.035);
+            cursor: pointer;
+        }
+
+        .sidebar-close:hover {
+            color: var(--nova-violet-bright);
+            background: rgba(155, 92, 255, 0.12);
+        }
+
+        .sidebar-links {
+            display: grid;
+            gap: 8px;
+            padding: 18px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 52px;
+            padding: 0 14px;
+            border: 1px solid transparent;
+            border-radius: 17px;
+            color: #b9abd8;
+            font-weight: 850;
+            transition: 0.22s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            color: white;
+            border-color: rgba(197, 155, 255, 0.28);
+            background: rgba(155, 92, 255, 0.12);
+        }
+
+        .sidebar-link i:first-child {
+            width: 21px;
+            color: var(--nova-violet-bright);
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px;
+            border-top: 1px solid rgba(197, 155, 255, 0.14);
+            color: var(--nova-muted-2);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .site-footer {
+            border-top: 1px solid rgba(197, 155, 255, 0.14);
+            background: rgba(0, 0, 0, 0.32);
+            backdrop-filter: blur(12px);
+            padding: 28px 0;
+            color: var(--nova-muted-2);
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .page-enter {
+            animation: slideUp 0.58s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (min-width: 720px) {
+            .hero-actions,
+            .cta-actions {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .desktop-nav {
+                display: none;
+            }
+
+            .stats-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cards-grid,
+            .cards-grid.two {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                display: block;
+            }
+        }
+
+        @media (max-width: 560px) {
+            :root {
+                --nav-height: 66px;
+            }
+
+            .brand-text {
+                font-size: 19px;
+            }
+
+            .hero-section {
+                padding-top: 42px;
+            }
+
+            .nova-orb-stage {
+                width: 170px;
+                height: 170px;
+            }
+
+            .nova-core {
+                width: 124px;
+                height: 124px;
+            }
+
+            .core-moon {
+                font-size: 58px;
+            }
+
+            .orbit-dot.one {
+                animation-name: orbitOneMobile;
+            }
+
+            .orbit-dot.two,
+            .orbit-dot.three {
+                display: none;
+            }
+
+            @keyframes orbitOneMobile {
+                from {
+                    transform: rotate(0deg) translateX(56px) rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg) translateX(56px) rotate(-360deg);
+                }
+            }
+
+            .stats-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .button {
+                width: 100%;
+                max-width: 360px;
+                min-height: 56px;
+                font-size: 15px;
+            }
+
+            .about-card {
+                padding: 24px 18px;
+            }
+
+            .ai-stack-note {
+                align-items: flex-start;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particle-field" class="particle-field" aria-hidden="true"></div>
+
+    <nav id="nav-bar" class="nav-shell">
+        <div class="container nav-inner">
+            <div class="brand-wrap">
+                <button id="menu-button" class="hamburger-button" type="button" aria-label="Open menu" aria-expanded="false">
+                    <span class="hamburger-lines" aria-hidden="true">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </span>
+                </button>
+                <a class="brand-link" href="#home" data-route="home">
+                    <span class="brand-orb">🌙</span>
+                    <span class="brand-text">Nova<span class="gradient-text">AI</span></span>
+                </a>
+            </div>
+
+            <div id="desktop-nav" class="desktop-nav" aria-label="Main navigation">
+                <a class="desktop-nav-link active" href="#home" data-route="home">Home</a>
+                <a class="desktop-nav-link" href="https://mertastudios.github.io/nova-ai-dashboard/" target="_blank" rel="noopener noreferrer">Dashboard <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                <a class="desktop-nav-link" href="#help" data-route="help">Features & Help</a>
+            </div>
+
+            <div class="nav-actions">
+                <div class="language-wrap">
+                    <button id="language-button" class="language-button" type="button" aria-label="Change language" aria-expanded="false">
+                        <span id="language-flag">🇬🇧</span>
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div id="language-menu" class="language-menu hidden" role="menu"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="ticker-bar" class="ticker-wrap" aria-hidden="true">
+        <div class="ticker-track">
+            <span class="ticker-item">ADD NOVA AI TO YOUR SERVER <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">100% FREE FOREVER <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">~1 SECOND RESPONSES <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">DASHBOARD READY <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">ADD NOVA AI TO YOUR SERVER <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">100% FREE FOREVER <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">~1 SECOND RESPONSES <i class="fa-solid fa-star ticker-icon"></i></span>
+            <span class="ticker-item">DASHBOARD READY <i class="fa-solid fa-star ticker-icon"></i></span>
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <aside id="sidebar" class="sidebar" aria-label="Sidebar menu" aria-hidden="true">
+        <div class="sidebar-head">
+            <a class="brand-link" href="#home" data-route="home">
+                <span class="brand-orb">🌙</span>
+                <span class="brand-text">Nova<span class="gradient-text">AI</span></span>
+            </a>
+            <button id="sidebar-close" class="sidebar-close" type="button" aria-label="Close menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="sidebar-links" class="sidebar-links"></div>
+        <div class="sidebar-footer">© 2026 Nova AI by Merta</div>
+    </aside>
+
+    <main id="content">
+        <!-- Fallback content: this prevents a blank page if JavaScript or a CDN fails. -->
+        <section class="hero-section">
+            <div class="aurora-layer" aria-hidden="true">
+                <span class="aurora-blob one"></span>
+                <span class="aurora-blob two"></span>
+                <span class="aurora-blob three"></span>
+            </div>
+            <div class="container hero-grid">
+                <div>
+                    <div class="hero-eyebrow eyebrow">
+                        <i class="fa-brands fa-discord"></i>
+                        <span>Discord AI Chatbot</span>
+                        <span class="status-dot"></span>
+                    </div>
+                    <h1 class="hero-title animate-slide">Meet</h1>
+                    <h1 class="hero-title animate-slide" style="animation-delay: 0.08s">
+                        <span class="text-stroke">Nova</span><span class="gradient-text">AI</span>
+                    </h1>
+                    <div class="nova-orb-stage animate-slide" style="animation-delay: 0.14s">
+                        <div class="orb-glow"></div>
+                        <div class="orb-ring"></div>
+                        <div class="orb-ring second"></div>
+                        <div class="orb-ring third"></div>
+                        <div class="nova-core holo-border">
+                            <div class="scanner"></div>
+                            <span class="core-moon">🌙</span>
+                        </div>
+                        <span class="orbit-dot one"></span>
+                        <span class="orbit-dot two"></span>
+                        <span class="orbit-dot three"></span>
+                    </div>
+                    <p class="hero-subtitle">Your Ultimate Discord AI Chatbot</p>
+                    <p class="hero-description">Nova AI is a powerful, intelligent AI chatbot built for Discord servers. Let your community chat with an AI that understands context, remembers conversations and feels alive.</p>
+                    <div class="benefit-box">
+                        <p class="benefit-text gradient-text">Dynamic server personalities.</p>
+                    </div>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="https://discord.com/oauth2/authorize?client_id=1516309601346129920&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-discord"></i>
+                            <span>Add Nova AI to Your Server</span>
+                        </a>
+                        <a class="button button-secondary" href="https://mertastudios.github.io/nova-ai-dashboard/" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Open Nova Dashboard</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="footer" class="site-footer">
+        <div class="container">© 2026 Nova AI. Crafted by Merta. All rights reserved.</div>
+    </footer>
+
+    <script>
+        'use strict';
+
+        const CONFIG = {
+            DISCORD_INVITE_URL: 'https://discord.com/oauth2/authorize?client_id=1516309601346129920&permissions=8&integration_type=0&scope=bot+applications.commands',
+            DASHBOARD_URL: 'https://mertastudios.github.io/nova-ai-dashboard/',
+            YOUTUBE_URL: 'https://youtube.com/@merta.studios?si=m-tX82VWFZfTSyUs',
+            DISCORD_USERNAME: '@_mertastudios'
+        };
+
+        const LANGUAGES = [
+            { code: 'en', flag: '🇬🇧', label: 'English' },
+            { code: 'de', flag: '🇩🇪', label: 'Deutsch' },
+            { code: 'es', flag: '🇪🇸', label: 'Español' },
+            { code: 'fr', flag: '🇫🇷', label: 'Français' },
+            { code: 'it', flag: '🇮🇹', label: 'Italiano' },
+            { code: 'pt', flag: '🇵🇹', label: 'Português' },
+            { code: 'nl', flag: '🇳🇱', label: 'Nederlands' },
+            { code: 'pl', flag: '🇵🇱', label: 'Polski' },
+            { code: 'tr', flag: '🇹🇷', label: 'Türkçe' }
+        ];
+
+        const EN = {
+            nav: {
+                home: 'Home',
+                dashboard: 'Dashboard',
+                features: 'Features & Help',
+                about: 'About & Contact',
+                privacy: 'Privacy',
+                terms: 'Terms'
+            },
+            home: {
+                meet: 'Meet',
+                subtitle: 'Your Ultimate Discord AI Chatbot',
+                description: 'Nova AI is a powerful, intelligent AI chatbot built for Discord servers. Give your community an AI companion that understands context, remembers conversations and feels alive.',
+                invite: 'Add Nova AI to Your Server',
+                dashboard: 'Open Nova Dashboard',
+                discordChatbot: 'Discord AI Chatbot',
+                highlights: [
+                    ['fa-brands fa-discord', 'Built for Discord', 'Designed from the ground up as a Discord bot — not a generic AI ported over. Nova AI lives in your server and talks like a real member.'],
+                    ['fa-solid fa-gift', 'Completely Free', 'No premium plans, no paywalls. Every feature is available for free. Just add it and start chatting.'],
+                    ['fa-solid fa-bolt', 'Lightning Fast', 'Powered by Groq ultra-fast inference. Responses generate in around one second — brutally fast and natural.']
+                ],
+                stats: [
+                    ['~1s', 'response speed'],
+                    ['0€', 'hosting cost'],
+                    ['24/7', 'community ready'],
+                    ['∞', 'personalities']
+                ],
+                benefits: [
+                    'Not just another soulless tool.',
+                    'Dynamic server personalities.',
+                    'Context-aware conversation memory.',
+                    'Automated API key rotation.',
+                    'Full multi-language support.',
+                    'Privacy-first server cleanup.',
+                    'A real Discord AI companion.'
+                ]
+            },
+            help: {
+                title: 'Features & Commands',
+                subtitle: 'Master Nova AI. Explore commands, features, diagnostics and the most important setup answers.',
+                commandsTitle: 'Slash Commands',
+                featuresTitle: 'Features',
+                featuresSubtitle: 'What makes Nova AI different from normal Discord bots.',
+                faqTitle: 'Troubleshooting & FAQ',
+                ctaTitle: 'Enough reading?',
+                adminOnly: 'Admin Only',
+                everyone: 'Everyone',
+                commands: [
+                    ['/set_channel', true, 'Designates an automated AI chat channel where Nova AI responds instantly without needing a ping.'],
+                    ['/edit_personality', true, 'Switches personality templates or opens a custom prompt modal for totally custom behavior.'],
+                    ['/manage_api_keys', true, 'Opens a private control panel to register, delete and rotate multiple Groq API keys.'],
+                    ['/set_language', true, 'Changes the global language setting for bot responses and localized embeds.'],
+                    ['/reset_chat_history', true, 'Wipes the conversation memory buffer for the current channel and starts fresh.'],
+                    ['/feedback', false, 'Opens a direct developer feedback form. A global 3-hour cooldown applies per user.']
+                ],
+                features: [
+                    ['fa-solid fa-bolt', 'Blazing Fast AI Responses', 'Nova AI generates complete responses in around one second. No loading drama — just instant conversation.'],
+                    ['fa-solid fa-brain', 'Context & Memory', 'It remembers conversation history and understands display names, profiles and roles for better replies.'],
+                    ['fa-solid fa-masks-theater', 'Custom Personality', 'Make Nova AI act like anything: study buddy, gamer nerd, dramatic diva or your own custom prompt.'],
+                    ['fa-solid fa-heart', '100% Free', 'No premium version, no paywalls and no hidden costs. Every feature stays free.'],
+                    ['fa-solid fa-paperclip', 'Understands Attachments', 'Images, files, emojis, stickers and voice messages can be interpreted intelligently.'],
+                    ['fa-solid fa-rotate', 'Multi-Key API Rotation', 'Add several Groq API keys. Nova AI rotates them when a rate limit is hit.'],
+                    ['fa-solid fa-terminal', 'Simple Discord Setup', 'Configure channels, personality, API keys and language with slash commands directly in Discord.'],
+                    ['fa-solid fa-gauge-high', 'Dashboard Access', 'Open the Nova dashboard from the website to view supported controls and status information.']
+                ],
+                faqs: [
+                    ['What can I do if my Groq usage limit is reached or if I need instant capacity?', 'Create a fresh free Groq account, generate a new API key there and add it with /manage_api_keys. Nova AI can then rotate to the new capacity.'],
+                    ['Why does it say the limit is reached even though it should not be reached yet?', 'If multiple API keys come from the same Groq account, they usually share the same account limit. Solution: create different API keys on different accounts and add those keys to Nova AI.'],
+                    ['What does “Groq API error 401” mean?', 'The registered API key is invalid, expired or copied incorrectly. Open /manage_api_keys, remove the broken key and add a fresh one.'],
+                    ['How do API keys work, and is this an IP logger?', 'An API key is just a secret access token that lets Nova AI send requests to a service like Groq on your behalf. API means Application Programming Interface. It is not an IP logger: the key is used for authentication with Groq, not to track user IP addresses.'],
+                    ['Why does the dashboard say it has no database access?', 'Most likely the small free database limit of the developer was reached temporarily. Nothing is broken on your side — simply try again in a few hours.'],
+                    ['How was the bot developed?', 'Nova AI was developed with AI assistance only — mainly Claude, Arena AI and Gemini — and with free services. Hosting the bot and website costs the developer nothing.'],
+                    ['What do errors like 400, 403, 500 or 503 mean?', 'They are usually temporary API or server issues. Wait a moment and try again. If the issue stays, contact the developer through /feedback.'],
+                    ['The bot repeats itself or acts uncreative. What can I do?', 'The personality prompt may be too vague. Ask another AI to improve your prompt, then upload the improved version with /edit_personality.'],
+                    ['Why is nothing working although the bot is online?', 'A background webserver process may be stuck. The developer is automatically notified in many cases, so please wait while the service recovers.'],
+                    ['Why is the bot completely offline?', 'The developer may be deploying an update or the host crashed. The backend is monitored and will be brought back online as soon as possible.'],
+                    ['The bot is stuck in a weird loop or remembers wrong details. What helps?', 'Use /reset_chat_history in the active channel to clear the temporary memory and start a fresh conversation.']
+                ]
+            },
+            about: {
+                eyebrow: 'The Developer',
+                titlePrefix: 'Developed by',
+                discordHandle: 'Discord Handle:',
+                bio: 'Hey there! I am Merta, a creator specializing in interactive digital experiences. Nova AI was built as a living companion for communities instead of a cold script runner.',
+                collabTitle: 'AI-powered development',
+                collabText: 'This bot and website were built with the help of Claude, Arena AI and Gemini — using free services only.',
+                youtube: 'Subscribe on YouTube',
+                docs: 'Read Documentation'
+            },
+            privacy: {
+                title: 'Privacy Policy',
+                updated: 'Last updated: July 2026',
+                sections: [
+                    ['1. Data Collection Scope', 'Nova AI temporarily processes messages, display names and attachment metadata only for active conversations and bot functionality.'],
+                    ['2. Encryption Standards', 'Sensitive operational data such as administrator Groq API keys is protected with strong encryption.'],
+                    ['3. Erasure Policy', 'When Nova AI leaves a server, related server configuration, memories and API records are deleted.'],
+                    ['4. Third-Party Routing', 'AI requests are routed through Groq. Data is not sold or monetized by Nova AI.']
+                ]
+            },
+            terms: {
+                title: 'Terms of Service',
+                updated: 'Last updated: July 2026',
+                sections: [
+                    ['1. Usage Agreement', 'By adding Nova AI to your Discord server, you agree to follow Discord rules and API provider terms.'],
+                    ['2. Key Ownership & Abuse', 'Server administrators are responsible for any API credentials they connect. Spam and abuse are prohibited.'],
+                    ['3. Liability Limits', 'Nova AI is provided as-is without uptime guarantees. Downtime can happen on free infrastructure.']
+                ]
+            },
+            ticker: ['ADD NOVA AI TO YOUR SERVER', '100% FREE FOREVER', '~1 SECOND RESPONSES', 'DASHBOARD READY'],
+            footer: '© 2026 Nova AI. Crafted by Merta. All rights reserved.',
+            eyebrows: {
+                system: 'NOVA / SYSTEM',
+                commands: 'SLASH COMMANDS',
+                features: 'CAPABILITIES',
+                faq: 'DIAGNOSTICS',
+                legal: 'THE FINE PRINT'
+            }
+        };
+
+        const TRANSLATIONS = {
+            en: EN,
+            de: {
+                nav: {
+                    home: 'Startseite',
+                    dashboard: 'Dashboard',
+                    features: 'Features & Hilfe',
+                    about: 'Über uns & Kontakt',
+                    privacy: 'Datenschutz',
+                    terms: 'Nutzungsbedingungen'
+                },
+                home: {
+                    meet: 'Triff',
+                    subtitle: 'Dein ultimativer Discord AI Chatbot',
+                    description: 'Nova AI ist ein mächtiger, intelligenter AI-Chatbot für Discord-Server. Gib deiner Community einen KI-Begleiter, der Kontext versteht, Gespräche merkt und sich lebendig anfühlt.',
+                    invite: 'Nova AI zum Server hinzufügen',
+                    dashboard: 'Nova Dashboard öffnen',
+                    discordChatbot: 'Discord AI Chatbot',
+                    highlights: [
+                        ['fa-brands fa-discord', 'Für Discord gebaut', 'Von Grund auf als Discord-Bot entwickelt — keine generische KI. Nova AI lebt auf deinem Server und schreibt wie ein echtes Mitglied.'],
+                        ['fa-solid fa-gift', 'Komplett kostenlos', 'Keine Premium-Pläne, keine Paywalls. Jedes Feature ist kostenlos. Einfach hinzufügen und loschatten.'],
+                        ['fa-solid fa-bolt', 'Blitzschnell', 'Angetrieben von Groqs ultraschneller Inferenz. Antworten entstehen in etwa einer Sekunde — extrem schnell und natürlich.']
+                    ],
+                    stats: [
+                        ['~1s', 'Antwortzeit'],
+                        ['0€', 'Hosting-Kosten'],
+                        ['24/7', 'Community-ready'],
+                        ['∞', 'Persönlichkeiten']
+                    ],
+                    benefits: [
+                        'Nicht nur ein seelenloses Tool.',
+                        'Dynamische Server-Persönlichkeiten.',
+                        'Kontextbewusstes Gesprächsgedächtnis.',
+                        'Automatische API-Key-Rotation.',
+                        'Volle Mehrsprachunterstützung.',
+                        'Datenschutzfreundliche Server-Bereinigung.',
+                        'Ein echter Discord AI Begleiter.'
+                    ]
+                },
+                help: {
+                    title: 'Features & Befehle',
+                    subtitle: 'Meistere Nova AI. Entdecke Befehle, Features, Diagnosen und die wichtigsten Setup-Antworten.',
+                    commandsTitle: 'Slash-Befehle',
+                    featuresTitle: 'Features',
+                    featuresSubtitle: 'Was Nova AI von normalen Discord-Bots unterscheidet.',
+                    faqTitle: 'Fehlerbehebung & FAQ',
+                    ctaTitle: 'Genug gelesen?',
+                    adminOnly: 'Nur Admins',
+                    everyone: 'Jeder',
+                    commands: [
+                        ['/set_channel', true, 'Legt einen automatischen AI-Chat-Kanal fest, in dem Nova AI sofort ohne Ping antwortet.'],
+                        ['/edit_personality', true, 'Wechselt Persönlichkeitsvorlagen oder öffnet ein Modal für komplett eigene Prompts.'],
+                        ['/manage_api_keys', true, 'Öffnet ein privates Kontrollpanel zum Hinzufügen, Löschen und Rotieren mehrerer Groq API-Keys.'],
+                        ['/set_language', true, 'Ändert die globale Sprache für Bot-Antworten und lokalisierte Embeds.'],
+                        ['/reset_chat_history', true, 'Löscht den Gesprächsspeicher für den aktuellen Kanal und startet neu.'],
+                        ['/feedback', false, 'Öffnet ein direktes Feedback-Formular für den Entwickler. Pro Nutzer gilt ein 3-Stunden-Cooldown.']
+                    ],
+                    features: [
+                        ['fa-solid fa-bolt', 'Blitzschnelle AI-Antworten', 'Nova AI erzeugt komplette Antworten in etwa einer Sekunde. Kein Lade-Drama — nur sofortige Konversation.'],
+                        ['fa-solid fa-brain', 'Kontext & Erinnerung', 'Nova AI merkt sich Gesprächsverläufe und versteht Anzeigenamen, Profile und Rollen für bessere Antworten.'],
+                        ['fa-solid fa-masks-theater', 'Eigene Persönlichkeit', 'Lass Nova AI wie alles Mögliche wirken: Lernbuddy, Gamer-Nerd, Drama-Diva oder dein eigener Prompt.'],
+                        ['fa-solid fa-heart', '100% Kostenlos', 'Keine Premium-Version, keine Paywall und keine versteckten Kosten. Alle Features bleiben gratis.'],
+                        ['fa-solid fa-paperclip', 'Versteht Anhänge', 'Bilder, Dateien, Emojis, Sticker und Sprachnachrichten können intelligent interpretiert werden.'],
+                        ['fa-solid fa-rotate', 'Multi-Key API-Rotation', 'Füge mehrere Groq API-Keys hinzu. Nova AI rotiert sie, wenn ein Limit erreicht wird.'],
+                        ['fa-solid fa-terminal', 'Einfaches Discord-Setup', 'Konfiguriere Kanal, Persönlichkeit, API-Keys und Sprache direkt per Slash-Befehl in Discord.'],
+                        ['fa-solid fa-gauge-high', 'Dashboard-Zugriff', 'Öffne das Nova Dashboard direkt von der Website, um unterstützte Controls und Statusinfos zu sehen.']
+                    ],
+                    faqs: [
+                        ['Was kann ich tun, wenn mein Groq-Nutzungslimit erreicht wurde und ich sofort mehr Kapazität brauche?', 'Erstelle einen frischen kostenlosen Groq-Account, lege dort einen neuen API-Key an und füge ihn mit /manage_api_keys hinzu. Nova AI kann dann auf die neue Kapazität rotieren.'],
+                        ['Warum zeigt es an, dass ich das Limit erreicht hätte, obwohl es längst nicht erreicht sein sollte?', 'Wenn mehrere API-Keys vom selben Groq-Konto stammen, teilen sie sich meistens dasselbe Kontolimit. Lösung: Erstelle andere API-Keys auf verschiedenen Accounts und füge diese Keys zu Nova AI hinzu.'],
+                        ['Was bedeutet „Groq API error 401“?', 'Der gespeicherte API-Key ist ungültig, abgelaufen oder falsch kopiert. Öffne /manage_api_keys, entferne den kaputten Key und füge einen neuen hinzu.'],
+                        ['Wie funktionieren API-Keys generell, und ist das ein IP-Logger?', 'Ein API-Key ist nur ein geheimer Zugriffsschlüssel, mit dem Nova AI Anfragen an einen Dienst wie Groq senden darf. API bedeutet Application Programming Interface, also Programmierschnittstelle. Das ist kein IP-Logger: Der Key dient zur Anmeldung bei Groq und nicht dazu, IP-Adressen von Nutzern zu tracken.'],
+                        ['Warum steht im Dashboard, dass es keinen Zugriff auf die Datenbank hat?', 'Wahrscheinlich wurde das kleine kostenlose Datenbank-Limit des Entwicklers vorübergehend erreicht. Bei dir ist nichts kaputt — probiere es einfach in ein paar Stunden erneut.'],
+                        ['Wie wurde der Bot entwickelt?', 'Nova AI wurde nur mit KI-Unterstützung entwickelt — vor allem mit Claude, Arena AI und Gemini — und ausschließlich mit kostenlosen Services. Den Entwickler kostet es keinen Cent, den Bot und die Website zu hosten.'],
+                        ['Was bedeuten Fehler wie 400, 403, 500 oder 503?', 'Das sind meistens temporäre API- oder Serverprobleme. Warte kurz und probiere es erneut. Wenn es bleibt, kontaktiere den Entwickler über /feedback.'],
+                        ['Der Bot wiederholt sich oder ist unkreativ. Was kann ich tun?', 'Der Persönlichkeitsprompt ist vielleicht zu ungenau. Lass ihn von einer anderen KI verbessern und lade die bessere Version mit /edit_personality hoch.'],
+                        ['Warum funktioniert nichts, obwohl der Bot online angezeigt wird?', 'Ein Hintergrund-Webserverprozess kann hängen. Der Entwickler wird in vielen Fällen automatisch benachrichtigt. Bitte warte, während sich der Dienst erholt.'],
+                        ['Warum ist der Bot komplett offline?', 'Der Entwickler macht möglicherweise ein Update oder der Host ist abgestürzt. Das Backend wird überwacht und so schnell wie möglich wieder online gebracht.'],
+                        ['Der Bot hängt in einer komischen Schleife oder merkt sich falsche Details. Was hilft?', 'Nutze /reset_chat_history im aktiven Kanal, um den temporären Speicher zu löschen und frisch zu starten.']
+                    ]
+                },
+                about: {
+                    eyebrow: 'Der Entwickler',
+                    titlePrefix: 'Entwickelt von',
+                    discordHandle: 'Discord-Handle:',
+                    bio: 'Hey! Ich bin Merta, ein Creator für interaktive digitale Erlebnisse. Nova AI wurde als lebendiger Begleiter für Communities gebaut — nicht als kalter Script-Runner.',
+                    collabTitle: 'KI-gestützte Entwicklung',
+                    collabText: 'Dieser Bot und diese Website wurden mit Hilfe von Claude, Arena AI und Gemini gebaut — ausschließlich mit kostenlosen Services.',
+                    youtube: 'Auf YouTube abonnieren',
+                    docs: 'Dokumentation lesen'
+                },
+                privacy: {
+                    title: 'Datenschutzrichtlinie',
+                    updated: 'Zuletzt aktualisiert: Juli 2026',
+                    sections: [
+                        ['1. Umfang der Datenerhebung', 'Nova AI verarbeitet Nachrichten, Anzeigenamen und Anhang-Metadaten temporär nur für aktive Gespräche und Bot-Funktionen.'],
+                        ['2. Verschlüsselung', 'Sensible Betriebsdaten wie Groq API-Keys von Administratoren werden stark verschlüsselt geschützt.'],
+                        ['3. Löschrichtlinie', 'Wenn Nova AI einen Server verlässt, werden zugehörige Serverkonfigurationen, Erinnerungen und API-Datensätze gelöscht.'],
+                        ['4. Drittanbieter', 'KI-Anfragen laufen über Groq. Daten werden von Nova AI nicht verkauft oder monetarisiert.']
+                    ]
+                },
+                terms: {
+                    title: 'Nutzungsbedingungen',
+                    updated: 'Zuletzt aktualisiert: Juli 2026',
+                    sections: [
+                        ['1. Nutzungsvereinbarung', 'Mit dem Hinzufügen von Nova AI zu deinem Discord-Server akzeptierst du Discord-Regeln und die Bedingungen der API-Anbieter.'],
+                        ['2. Key-Eigentum & Missbrauch', 'Server-Admins sind für verbundene API-Zugangsdaten verantwortlich. Spam und Missbrauch sind verboten.'],
+                        ['3. Haftungsgrenzen', 'Nova AI wird ohne Verfügbarkeitsgarantie bereitgestellt. Ausfälle können auf kostenloser Infrastruktur passieren.']
+                    ]
+                },
+                ticker: ['NOVA AI ZU DEINEM SERVER HINZUFÜGEN', '100% KOSTENLOS FÜR IMMER', '~1 SEKUNDE ANTWORTZEIT', 'DASHBOARD BEREIT'],
+                footer: '© 2026 Nova AI. Gestaltet von Merta. Alle Rechte vorbehalten.',
+                eyebrows: {
+                    system: 'NOVA / SYSTEM',
+                    commands: 'SLASH-BEFEHLE',
+                    features: 'FÄHIGKEITEN',
+                    faq: 'DIAGNOSE',
+                    legal: 'DAS KLEINGEDRUCKTE'
+                }
+            }
+        };
+
+        const LANGUAGE_OVERRIDES = {
+            es: {
+                nav: { home: 'Inicio', dashboard: 'Panel', features: 'Funciones y ayuda', about: 'Acerca de y contacto', privacy: 'Privacidad', terms: 'Términos' },
+                home: { meet: 'Conoce', subtitle: 'Tu chatbot de IA definitivo para Discord', description: 'Nova AI es un chatbot inteligente para servidores de Discord que entiende el contexto y se siente vivo.', invite: 'Añadir Nova AI a tu servidor', dashboard: 'Abrir panel de Nova', discordChatbot: 'Chatbot de IA para Discord' },
+                help: { title: 'Funciones y comandos', subtitle: 'Domina Nova AI con comandos, funciones y respuestas de configuración.', commandsTitle: 'Comandos slash', featuresTitle: 'Funciones', featuresSubtitle: 'Lo que hace especial a Nova AI.', faqTitle: 'Solución de problemas y FAQ', ctaTitle: '¿Suficiente lectura?', adminOnly: 'Solo admins', everyone: 'Todos' },
+                ticker: ['AÑADE NOVA AI A TU SERVIDOR', '100% GRATIS PARA SIEMPRE', 'RESPUESTAS EN ~1 SEGUNDO', 'PANEL LISTO'],
+                footer: '© 2026 Nova AI. Creado por Merta. Todos los derechos reservados.'
+            },
+            fr: {
+                nav: { home: 'Accueil', dashboard: 'Tableau de bord', features: 'Fonctionnalités et aide', about: 'À propos et contact', privacy: 'Confidentialité', terms: 'Conditions' },
+                home: { meet: 'Découvre', subtitle: 'Ton chatbot IA Discord ultime', description: 'Nova AI est un chatbot intelligent pour serveurs Discord qui comprend le contexte et semble vivant.', invite: 'Ajouter Nova AI au serveur', dashboard: 'Ouvrir le tableau de bord', discordChatbot: 'Chatbot IA Discord' },
+                help: { title: 'Fonctionnalités et commandes', subtitle: 'Maîtrise Nova AI avec les commandes, fonctions et réponses de configuration.', commandsTitle: 'Commandes slash', featuresTitle: 'Fonctionnalités', featuresSubtitle: 'Ce qui rend Nova AI spécial.', faqTitle: 'Dépannage et FAQ', ctaTitle: 'Assez lu ?', adminOnly: 'Admins uniquement', everyone: 'Tout le monde' },
+                ticker: ['AJOUTE NOVA AI À TON SERVEUR', '100% GRATUIT POUR TOUJOURS', 'RÉPONSES EN ~1 SECONDE', 'TABLEAU DE BORD PRÊT'],
+                footer: '© 2026 Nova AI. Créé par Merta. Tous droits réservés.'
+            },
+            it: {
+                nav: { home: 'Home', dashboard: 'Dashboard', features: 'Funzioni e aiuto', about: 'Info e contatto', privacy: 'Privacy', terms: 'Termini' },
+                home: { meet: 'Incontra', subtitle: 'Il tuo chatbot IA Discord definitivo', description: 'Nova AI è un chatbot intelligente per server Discord che capisce il contesto e sembra vivo.', invite: 'Aggiungi Nova AI al server', dashboard: 'Apri dashboard Nova', discordChatbot: 'Chatbot IA Discord' },
+                help: { title: 'Funzioni e comandi', subtitle: 'Scopri comandi, funzioni e risposte di configurazione.', commandsTitle: 'Comandi slash', featuresTitle: 'Funzioni', featuresSubtitle: 'Ciò che rende Nova AI speciale.', faqTitle: 'Risoluzione problemi e FAQ', ctaTitle: 'Hai letto abbastanza?', adminOnly: 'Solo admin', everyone: 'Tutti' },
+                ticker: ['AGGIUNGI NOVA AI AL SERVER', '100% GRATIS PER SEMPRE', 'RISPOSTE IN ~1 SECONDO', 'DASHBOARD PRONTA'],
+                footer: '© 2026 Nova AI. Creato da Merta. Tutti i diritti riservati.'
+            },
+            pt: {
+                nav: { home: 'Início', dashboard: 'Painel', features: 'Recursos e ajuda', about: 'Sobre e contato', privacy: 'Privacidade', terms: 'Termos' },
+                home: { meet: 'Conheça', subtitle: 'Seu chatbot de IA definitivo para Discord', description: 'Nova AI é um chatbot inteligente para servidores Discord que entende contexto e parece vivo.', invite: 'Adicionar Nova AI ao servidor', dashboard: 'Abrir painel Nova', discordChatbot: 'Chatbot de IA Discord' },
+                help: { title: 'Recursos e comandos', subtitle: 'Domine Nova AI com comandos, recursos e respostas de configuração.', commandsTitle: 'Comandos slash', featuresTitle: 'Recursos', featuresSubtitle: 'O que torna Nova AI especial.', faqTitle: 'Solução de problemas e FAQ', ctaTitle: 'Leu o bastante?', adminOnly: 'Só admins', everyone: 'Todos' },
+                ticker: ['ADICIONE NOVA AI AO SERVIDOR', '100% GRÁTIS PARA SEMPRE', 'RESPOSTAS EM ~1 SEGUNDO', 'PAINEL PRONTO'],
+                footer: '© 2026 Nova AI. Criado por Merta. Todos os direitos reservados.'
+            },
+            nl: {
+                nav: { home: 'Home', dashboard: 'Dashboard', features: 'Functies en hulp', about: 'Over en contact', privacy: 'Privacy', terms: 'Voorwaarden' },
+                home: { meet: 'Ontmoet', subtitle: 'Jouw ultieme Discord AI-chatbot', description: 'Nova AI is een slimme chatbot voor Discord-servers die context begrijpt en levendig aanvoelt.', invite: 'Voeg Nova AI toe aan je server', dashboard: 'Open Nova-dashboard', discordChatbot: 'Discord AI-chatbot' },
+                help: { title: 'Functies en commando’s', subtitle: 'Leer Nova AI kennen met commando’s, functies en setup-antwoorden.', commandsTitle: 'Slash-commando’s', featuresTitle: 'Functies', featuresSubtitle: 'Wat Nova AI speciaal maakt.', faqTitle: 'Probleemoplossing en FAQ', ctaTitle: 'Genoeg gelezen?', adminOnly: 'Alleen admins', everyone: 'Iedereen' },
+                ticker: ['VOEG NOVA AI TOE AAN JE SERVER', '100% GRATIS VOOR ALTIJD', 'ANTWOORDEN IN ~1 SECONDE', 'DASHBOARD KLAAR'],
+                footer: '© 2026 Nova AI. Gemaakt door Merta. Alle rechten voorbehouden.'
+            },
+            pl: {
+                nav: { home: 'Strona główna', dashboard: 'Panel', features: 'Funkcje i pomoc', about: 'O nas i kontakt', privacy: 'Prywatność', terms: 'Regulamin' },
+                home: { meet: 'Poznaj', subtitle: 'Twój najlepszy chatbot AI dla Discorda', description: 'Nova AI to inteligentny chatbot dla serwerów Discord, który rozumie kontekst i sprawia wrażenie żywego.', invite: 'Dodaj Nova AI do serwera', dashboard: 'Otwórz panel Nova', discordChatbot: 'Chatbot AI Discord' },
+                help: { title: 'Funkcje i komendy', subtitle: 'Poznaj komendy, funkcje i odpowiedzi konfiguracyjne.', commandsTitle: 'Komendy slash', featuresTitle: 'Funkcje', featuresSubtitle: 'Co wyróżnia Nova AI.', faqTitle: 'Rozwiązywanie problemów i FAQ', ctaTitle: 'Wystarczy czytania?', adminOnly: 'Tylko admini', everyone: 'Wszyscy' },
+                ticker: ['DODAJ NOVA AI DO SERWERA', '100% ZA DARMO NA ZAWSZE', 'ODPOWIEDZI W ~1 SEKUNDĘ', 'PANEL GOTOWY'],
+                footer: '© 2026 Nova AI. Stworzone przez Merta. Wszelkie prawa zastrzeżone.'
+            },
+            tr: {
+                nav: { home: 'Ana sayfa', dashboard: 'Panel', features: 'Özellikler ve yardım', about: 'Hakkında ve iletişim', privacy: 'Gizlilik', terms: 'Şartlar' },
+                home: { meet: 'Tanış', subtitle: 'En güçlü Discord yapay zekâ sohbet botun', description: 'Nova AI, Discord sunucuları için bağlamı anlayan ve canlı hissettiren akıllı bir yapay zekâ sohbet botudur.', invite: 'Nova AI’yı sunucuna ekle', dashboard: 'Nova panelini aç', discordChatbot: 'Discord yapay zekâ sohbet botu' },
+                help: { title: 'Özellikler ve komutlar', subtitle: 'Komutlar, özellikler ve kurulum cevaplarıyla Nova AI’yı öğren.', commandsTitle: 'Slash komutları', featuresTitle: 'Özellikler', featuresSubtitle: 'Nova AI’yı özel yapan şeyler.', faqTitle: 'Sorun giderme ve SSS', ctaTitle: 'Yeterince okudun mu?', adminOnly: 'Sadece admin', everyone: 'Herkes' },
+                ticker: ['NOVA AI’YI SUNUCUNA EKLE', 'SONSUZA KADAR %100 ÜCRETSİZ', '~1 SANİYEDE CEVAP', 'PANEL HAZIR'],
+                footer: '© 2026 Nova AI. Merta tarafından tasarlandı. Tüm hakları saklıdır.'
+            }
+        };
+
+        function deepMerge(base, override) {
+            if (Array.isArray(base)) {
+                return Array.isArray(override) ? override : base;
+            }
+            if (typeof base !== 'object' || base === null) {
+                return override === undefined ? base : override;
+            }
+            const output = { ...base };
+            if (typeof override !== 'object' || override === null) {
+                return output;
+            }
+            Object.keys(override).forEach(function (key) {
+                output[key] = deepMerge(base[key], override[key]);
+            });
+            return output;
+        }
+
+        Object.keys(LANGUAGE_OVERRIDES).forEach(function (code) {
+            TRANSLATIONS[code] = deepMerge(EN, LANGUAGE_OVERRIDES[code]);
+        });
+
+        const state = {
+            lang: localStorage.getItem('nova-lang') || 'en',
+            page: 'home',
+            menuOpen: false,
+            languageOpen: false,
+            benefitIndex: 0,
+            faqOpen: null
+        };
+
+        const els = {
+            navBar: document.getElementById('nav-bar'),
+            desktopNav: document.getElementById('desktop-nav'),
+            menuButton: document.getElementById('menu-button'),
+            languageButton: document.getElementById('language-button'),
+            languageFlag: document.getElementById('language-flag'),
+            languageMenu: document.getElementById('language-menu'),
+            tickerBar: document.getElementById('ticker-bar'),
+            sidebar: document.getElementById('sidebar'),
+            sidebarOverlay: document.getElementById('sidebar-overlay'),
+            sidebarLinks: document.getElementById('sidebar-links'),
+            sidebarClose: document.getElementById('sidebar-close'),
+            content: document.getElementById('content'),
+            footer: document.getElementById('footer'),
+            particleField: document.getElementById('particle-field')
+        };
+
+        function data() {
+            return TRANSLATIONS[state.lang] || TRANSLATIONS.en;
+        }
+
+        function currentLanguageMeta() {
+            return LANGUAGES.find(function (item) {
+                return item.code === state.lang;
+            }) || LANGUAGES[0];
+        }
+
+        function icon(name) {
+            return '<i class="' + name + '" aria-hidden="true"></i>';
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function navItems() {
+            const d = data();
+            return [
+                { type: 'route', route: 'home', icon: 'fa-solid fa-house', label: d.nav.home },
+                { type: 'external', url: CONFIG.DASHBOARD_URL, icon: 'fa-solid fa-chart-line', label: d.nav.dashboard },
+                { type: 'route', route: 'help', icon: 'fa-solid fa-circle-question', label: d.nav.features },
+                { type: 'route', route: 'about', icon: 'fa-solid fa-user-astronaut', label: d.nav.about },
+                { type: 'route', route: 'privacy', icon: 'fa-solid fa-shield-halved', label: d.nav.privacy },
+                { type: 'route', route: 'terms', icon: 'fa-solid fa-file-contract', label: d.nav.terms }
+            ];
+        }
+
+        function setLanguage(code) {
+            state.lang = code;
+            state.languageOpen = false;
+            localStorage.setItem('nova-lang', code);
+            document.documentElement.lang = code;
+            renderAll();
+        }
+
+        function openMenu() {
+            state.menuOpen = true;
+            document.body.classList.add('menu-locked');
+            els.sidebar.classList.add('open');
+            els.sidebarOverlay.classList.add('open');
+            els.sidebar.setAttribute('aria-hidden', 'false');
+            els.menuButton.setAttribute('aria-expanded', 'true');
+            els.menuButton.classList.add('menu-open');
+        }
+
+        function closeMenu() {
+            state.menuOpen = false;
+            document.body.classList.remove('menu-locked');
+            els.sidebar.classList.remove('open');
+            els.sidebarOverlay.classList.remove('open');
+            els.sidebar.setAttribute('aria-hidden', 'true');
+            els.menuButton.setAttribute('aria-expanded', 'false');
+            els.menuButton.classList.remove('menu-open');
+        }
+
+        function toggleMenu() {
+            if (state.menuOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        }
+
+        function toggleLanguageMenu() {
+            state.languageOpen = !state.languageOpen;
+            renderLanguageMenu();
+        }
+
+        function navigate(route) {
+            state.page = route;
+            state.faqOpen = null;
+            if (state.menuOpen) {
+                closeMenu();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.location.hash = route === 'home' ? 'home' : route;
+            renderAll();
+        }
+
+        function handleHashRoute() {
+            const route = (window.location.hash || '#home').replace('#', '') || 'home';
+            const allowedRoutes = ['home', 'help', 'about', 'privacy', 'terms'];
+            state.page = allowedRoutes.includes(route) ? route : 'home';
+            state.faqOpen = null;
+            renderAll();
+        }
+
+        function renderDesktopNav() {
+            const important = navItems().slice(0, 3);
+            els.desktopNav.innerHTML = important.map(function (item) {
+                if (item.type === 'external') {
+                    return '<a class="desktop-nav-link" href="' + item.url + '" target="_blank" rel="noopener noreferrer">' +
+                        escapeHtml(item.label) + ' ' + icon('fa-solid fa-arrow-up-right-from-square') +
+                        '</a>';
+                }
+                const active = state.page === item.route ? ' active' : '';
+                return '<a class="desktop-nav-link' + active + '" href="#' + item.route + '" data-route="' + item.route + '">' + escapeHtml(item.label) + '</a>';
+            }).join('');
+        }
+
+        function renderSidebarLinks() {
+            els.sidebarLinks.innerHTML = navItems().map(function (item) {
+                if (item.type === 'external') {
+                    return '<a class="sidebar-link" href="' + item.url + '" target="_blank" rel="noopener noreferrer">' +
+                        icon(item.icon) + '<span>' + escapeHtml(item.label) + '</span><i class="fa-solid fa-arrow-up-right-from-square" style="margin-left:auto;font-size:12px;opacity:.7"></i>' +
+                        '</a>';
+                }
+                const active = state.page === item.route ? ' active' : '';
+                return '<a class="sidebar-link' + active + '" href="#' + item.route + '" data-route="' + item.route + '">' +
+                    icon(item.icon) + '<span>' + escapeHtml(item.label) + '</span>' +
+                    '</a>';
+            }).join('');
+        }
+
+        function renderLanguageMenu() {
+            const meta = currentLanguageMeta();
+            els.languageFlag.textContent = meta.flag;
+            els.languageButton.setAttribute('aria-expanded', state.languageOpen ? 'true' : 'false');
+            els.languageMenu.classList.toggle('hidden', !state.languageOpen);
+            els.languageMenu.innerHTML = LANGUAGES.map(function (language) {
+                const active = language.code === state.lang ? ' active' : '';
+                return '<button class="language-option' + active + '" type="button" data-language="' + language.code + '">' +
+                    '<span style="font-size:20px">' + language.flag + '</span>' +
+                    '<span>' + escapeHtml(language.label) + '</span>' +
+                    (active ? '<i class="fa-solid fa-check" style="margin-left:auto;color:var(--nova-violet-bright)"></i>' : '') +
+                    '</button>';
+            }).join('');
+        }
+
+        function renderTicker() {
+            const ticker = data().ticker;
+            const sequence = ticker.concat(ticker).concat(ticker);
+            els.tickerBar.innerHTML = '<div class="ticker-track">' + sequence.map(function (item) {
+                return '<span class="ticker-item">' + escapeHtml(item) + ' <i class="fa-solid fa-star ticker-icon"></i></span>';
+            }).join('') + '</div>';
+        }
+
+        function renderHeroHighlights() {
+            return data().home.highlights.map(function (card, index) {
+                return '<article class="nova-card highlight-card animate-slide" style="animation-delay:' + (0.52 + index * 0.09).toFixed(2) + 's">' +
+                    '<div class="icon-box">' + icon(card[0]) + '</div>' +
+                    '<h3 class="card-title">' + escapeHtml(card[1]) + '</h3>' +
+                    '<p class="card-text">' + escapeHtml(card[2]) + '</p>' +
+                    '</article>';
+            }).join('');
+        }
+
+        function renderStats() {
+            return data().home.stats.map(function (stat) {
+                return '<div class="stat-tile">' +
+                    '<span class="stat-value gradient-text">' + escapeHtml(stat[0]) + '</span>' +
+                    '<span class="stat-label">' + escapeHtml(stat[1]) + '</span>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function renderHome() {
+            const d = data();
+            const benefit = d.home.benefits[state.benefitIndex % d.home.benefits.length];
+            return '' +
+                '<section class="hero-section page-enter">' +
+                    '<div class="aurora-layer" aria-hidden="true">' +
+                        '<span class="aurora-blob one"></span>' +
+                        '<span class="aurora-blob two"></span>' +
+                        '<span class="aurora-blob three"></span>' +
+                    '</div>' +
+                    '<div class="container hero-grid">' +
+                        '<div>' +
+                            '<div class="hero-eyebrow eyebrow animate-slide">' +
+                                icon('fa-brands fa-discord') +
+                                '<span>' + escapeHtml(d.home.discordChatbot) + '</span>' +
+                                '<span class="status-dot"></span>' +
+                            '</div>' +
+                            '<h1 class="hero-title animate-slide" style="animation-delay:0.06s">' + escapeHtml(d.home.meet) + '</h1>' +
+                            '<h1 class="hero-title animate-slide" style="animation-delay:0.12s"><span class="text-stroke">Nova</span><span class="gradient-text">AI</span></h1>' +
+                            '<div class="nova-orb-stage animate-slide" style="animation-delay:0.18s">' +
+                                '<div class="orb-glow"></div>' +
+                                '<div class="orb-ring"></div>' +
+                                '<div class="orb-ring second"></div>' +
+                                '<div class="orb-ring third"></div>' +
+                                '<div class="nova-core holo-border">' +
+                                    '<div class="scanner"></div>' +
+                                    '<span class="core-moon">🌙</span>' +
+                                '</div>' +
+                                '<span class="orbit-dot one"></span>' +
+                                '<span class="orbit-dot two"></span>' +
+                                '<span class="orbit-dot three"></span>' +
+                            '</div>' +
+                            '<p class="hero-subtitle animate-slide" style="animation-delay:0.24s">' + escapeHtml(d.home.subtitle) + '</p>' +
+                            '<p class="hero-description animate-slide" style="animation-delay:0.30s">' + escapeHtml(d.home.description) + '</p>' +
+                            '<div class="benefit-box animate-slide" style="animation-delay:0.36s">' +
+                                '<p id="benefit-text" class="benefit-text gradient-text">' + escapeHtml(benefit) + '</p>' +
+                            '</div>' +
+                            '<div class="hero-actions animate-slide" style="animation-delay:0.42s">' +
+                                '<a class="button button-primary" href="' + CONFIG.DISCORD_INVITE_URL + '" target="_blank" rel="noopener noreferrer">' +
+                                    icon('fa-brands fa-discord') + '<span>' + escapeHtml(d.home.invite) + '</span>' +
+                                '</a>' +
+                                '<a class="button button-secondary" href="' + CONFIG.DASHBOARD_URL + '" target="_blank" rel="noopener noreferrer">' +
+                                    icon('fa-solid fa-chart-line') + '<span>' + escapeHtml(d.home.dashboard) + '</span>' + icon('fa-solid fa-arrow-up-right-from-square') +
+                                '</a>' +
+                            '</div>' +
+                            '<div class="stats-strip animate-slide" style="animation-delay:0.48s">' + renderStats() + '</div>' +
+                            '<div class="cards-grid">' + renderHeroHighlights() + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</section>';
+        }
+
+        function renderCommands() {
+            const d = data();
+            return d.help.commands.map(function (cmd) {
+                return '<article class="nova-card command-card">' +
+                    '<div class="command-head">' +
+                        '<span class="command-name">' + escapeHtml(cmd[0]) + '</span>' +
+                        '<span class="badge ' + (cmd[1] ? 'admin' : 'everyone') + '">' + (cmd[1] ? escapeHtml(d.help.adminOnly) : escapeHtml(d.help.everyone)) + '</span>' +
+                    '</div>' +
+                    '<p class="card-text">' + escapeHtml(cmd[2]) + '</p>' +
+                '</article>';
+            }).join('');
+        }
+
+        function renderFeatures() {
+            return data().help.features.map(function (feature, index) {
+                return '<article class="nova-card feature-card">' +
+                    '<div class="feature-layout">' +
+                        '<span class="feature-number">' + String(index + 1).padStart(2, '0') + '</span>' +
+                        '<div class="icon-box" style="margin-bottom:0;flex:0 0 auto">' + icon(feature[0]) + '</div>' +
+                        '<div>' +
+                            '<h3 class="card-title">' + escapeHtml(feature[1]) + '</h3>' +
+                            '<p class="card-text">' + escapeHtml(feature[2]) + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                '</article>';
+            }).join('');
+        }
+
+        function renderFaqs() {
+            return data().help.faqs.map(function (faq, index) {
+                const isOpen = state.faqOpen === index;
+                return '<article class="nova-card faq-item' + (isOpen ? ' open' : '') + '" data-faq-index="' + index + '">' +
+                    '<button class="faq-button" type="button" data-faq-toggle="' + index + '">' +
+                        '<span>' + escapeHtml(faq[0]) + '</span>' +
+                        '<i class="fa-solid fa-chevron-down faq-icon"></i>' +
+                    '</button>' +
+                    '<div class="faq-content">' +
+                        '<div class="faq-answer"><div class="faq-answer-inner">' + escapeHtml(faq[1]) + '</div></div>' +
+                    '</div>' +
+                '</article>';
+            }).join('');
+        }
+
+        function renderHelp() {
+            const d = data();
+            return '' +
+                '<section class="section page-enter">' +
+                    '<div class="container">' +
+                        '<div class="section-header animate-slide">' +
+                            '<div>' +
+                                '<p class="eyebrow" style="color:var(--nova-violet-bright);font-size:11px">' + escapeHtml(d.eyebrows.system) + '</p>' +
+                                '<h1 class="section-title">' + escapeHtml(d.help.title) + '</h1>' +
+                                '<p class="section-subtitle">' + escapeHtml(d.help.subtitle) + '</p>' +
+                            '</div>' +
+                        '</div>' +
+                        '<section class="section" style="padding-top:18px">' +
+                            '<div class="section-header">' +
+                                '<h2 class="section-title" style="font-size:clamp(2rem,5vw,4rem)">' + escapeHtml(d.help.commandsTitle) + '</h2>' +
+                                '<span class="eyebrow" style="color:var(--nova-violet-bright);font-size:11px">' + escapeHtml(d.eyebrows.commands) + '</span>' +
+                            '</div>' +
+                            '<div class="cards-grid two">' + renderCommands() + '</div>' +
+                        '</section>' +
+                        '<section class="section">' +
+                            '<div class="section-header">' +
+                                '<div>' +
+                                    '<h2 class="section-title" style="font-size:clamp(2rem,5vw,4rem)">' + escapeHtml(d.help.featuresTitle) + '</h2>' +
+                                    '<p class="section-subtitle">' + escapeHtml(d.help.featuresSubtitle) + '</p>' +
+                                '</div>' +
+                                '<span class="eyebrow" style="color:var(--nova-violet-bright);font-size:11px">' + escapeHtml(d.eyebrows.features) + '</span>' +
+                            '</div>' +
+                            '<div class="cards-grid two">' + renderFeatures() + '</div>' +
+                        '</section>' +
+                        '<section class="section">' +
+                            '<div class="section-header">' +
+                                '<h2 class="section-title" style="font-size:clamp(2rem,5vw,4rem)">' + escapeHtml(d.help.faqTitle) + '</h2>' +
+                                '<span class="eyebrow" style="color:var(--nova-violet-bright);font-size:11px">' + escapeHtml(d.eyebrows.faq) + '</span>' +
+                            '</div>' +
+                            '<div class="faq-list">' + renderFaqs() + '</div>' +
+                        '</section>' +
+                        '<section class="cta-panel">' +
+                            '<h2 class="cta-title">' + escapeHtml(d.help.ctaTitle) + '</h2>' +
+                            '<div class="cta-actions">' +
+                                '<a class="button button-primary" href="' + CONFIG.DISCORD_INVITE_URL + '" target="_blank" rel="noopener noreferrer">' + icon('fa-brands fa-discord') + '<span>' + escapeHtml(d.home.invite) + '</span></a>' +
+                                '<a class="button button-secondary" href="' + CONFIG.DASHBOARD_URL + '" target="_blank" rel="noopener noreferrer">' + icon('fa-solid fa-chart-line') + '<span>' + escapeHtml(d.home.dashboard) + '</span></a>' +
+                            '</div>' +
+                        '</section>' +
+                    '</div>' +
+                '</section>';
+        }
+
+        function renderAbout() {
+            const d = data();
+            return '' +
+                '<section class="section page-enter">' +
+                    '<div class="container">' +
+                        '<p class="eyebrow animate-slide" style="color:var(--nova-violet-bright);text-align:center;font-size:11px">' + escapeHtml(d.about.eyebrow) + '</p>' +
+                        '<article class="nova-card about-card animate-slide" style="animation-delay:0.08s">' +
+                            '<div class="avatar-orb holo-border">M</div>' +
+                            '<h1 class="about-title">' + escapeHtml(d.about.titlePrefix) + ' <span class="gradient-text">Merta</span></h1>' +
+                            '<p class="about-handle">' + icon('fa-brands fa-discord') + '<span>' + escapeHtml(d.about.discordHandle) + ' <strong style="color:#fff">' + escapeHtml(CONFIG.DISCORD_USERNAME) + '</strong></span></p>' +
+                            '<p class="about-bio">' + escapeHtml(d.about.bio) + '</p>' +
+                            '<div class="ai-stack-note">' +
+                                icon('fa-solid fa-wand-magic-sparkles') +
+                                '<p style="margin:0"><strong style="display:block;color:white;margin-bottom:3px">' + escapeHtml(d.about.collabTitle) + '</strong>' + escapeHtml(d.about.collabText) + '</p>' +
+                            '</div>' +
+                            '<div class="cta-actions">' +
+                                '<a class="button button-primary" style="background:#dc2626;color:white" href="' + CONFIG.YOUTUBE_URL + '" target="_blank" rel="noopener noreferrer">' + icon('fa-brands fa-youtube') + '<span>' + escapeHtml(d.about.youtube) + '</span></a>' +
+                                '<a class="button button-ghost" href="#help" data-route="help">' + icon('fa-solid fa-book') + '<span>' + escapeHtml(d.about.docs) + '</span></a>' +
+                            '</div>' +
+                        '</article>' +
+                    '</div>' +
+                '</section>';
+        }
+
+        function renderLegal(kind) {
+            const d = data();
+            const legal = kind === 'privacy' ? d.privacy : d.terms;
+            return '' +
+                '<section class="section page-enter">' +
+                    '<div class="container" style="max-width:860px">' +
+                        '<p class="eyebrow animate-slide" style="color:var(--nova-violet-bright);font-size:11px">' + escapeHtml(d.eyebrows.legal) + '</p>' +
+                        '<h1 class="section-title animate-slide" style="margin-bottom:20px">' + escapeHtml(legal.title) + '</h1>' +
+                        '<p class="font-tick animate-slide" style="color:var(--nova-muted-2);font-size:12px;margin-bottom:22px">' + escapeHtml(legal.updated) + '</p>' +
+                        '<div class="legal-stack">' + legal.sections.map(function (section) {
+                            return '<article class="nova-card legal-card"><h2>' + escapeHtml(section[0]) + '</h2><p>' + escapeHtml(section[1]) + '</p></article>';
+                        }).join('') + '</div>' +
+                    '</div>' +
+                '</section>';
+        }
+
+        function renderPage() {
+            if (state.page === 'help') {
+                els.content.innerHTML = renderHelp();
+            } else if (state.page === 'about') {
+                els.content.innerHTML = renderAbout();
+            } else if (state.page === 'privacy') {
+                els.content.innerHTML = renderLegal('privacy');
+            } else if (state.page === 'terms') {
+                els.content.innerHTML = renderLegal('terms');
+            } else {
+                els.content.innerHTML = renderHome();
+            }
+            initCardGlow();
+        }
+
+        function renderFooter() {
+            els.footer.innerHTML = '<div class="container">' + escapeHtml(data().footer) + '</div>';
+        }
+
+        function renderAll() {
+            renderDesktopNav();
+            renderSidebarLinks();
+            renderLanguageMenu();
+            renderTicker();
+            renderPage();
+            renderFooter();
+        }
+
+        function rotateBenefit() {
+            if (state.page !== 'home') {
+                return;
+            }
+            const text = document.getElementById('benefit-text');
+            const benefits = data().home.benefits;
+            if (!text || !benefits || !benefits.length) {
+                return;
+            }
+            text.style.opacity = '0';
+            text.style.transform = 'translateY(8px) scale(0.98)';
+            window.setTimeout(function () {
+                state.benefitIndex = (state.benefitIndex + 1) % benefits.length;
+                text.textContent = benefits[state.benefitIndex];
+                text.style.opacity = '1';
+                text.style.transform = 'translateY(0) scale(1)';
+            }, 420);
+        }
+
+        function initCardGlow() {
+            document.querySelectorAll('.nova-card').forEach(function (card) {
+                card.addEventListener('mousemove', function (event) {
+                    const rect = card.getBoundingClientRect();
+                    card.style.setProperty('--card-x', (event.clientX - rect.left) + 'px');
+                    card.style.setProperty('--card-y', (event.clientY - rect.top) + 'px');
+                });
+            });
+        }
+
+        function createParticles() {
+            if (!els.particleField) {
+                return;
+            }
+            const colors = ['#c59bff', '#43e7ff', '#ff4fd8', '#b6ff6d'];
+            const particleCount = window.matchMedia('(max-width: 560px)').matches ? 24 : 46;
+            const fragment = document.createDocumentFragment();
+            for (let index = 0; index < particleCount; index += 1) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+                particle.style.setProperty('--particle-left', Math.round(Math.random() * 100) + '%');
+                particle.style.setProperty('--particle-size', (2 + Math.random() * 4).toFixed(1) + 'px');
+                particle.style.setProperty('--particle-speed', (10 + Math.random() * 12).toFixed(1) + 's');
+                particle.style.setProperty('--particle-delay', (-Math.random() * 16).toFixed(1) + 's');
+                particle.style.setProperty('--particle-drift', ((Math.random() - 0.5) * 190).toFixed(0) + 'px');
+                particle.style.setProperty('--particle-color', colors[index % colors.length]);
+                fragment.appendChild(particle);
+            }
+            els.particleField.innerHTML = '';
+            els.particleField.appendChild(fragment);
+        }
+
+        document.addEventListener('click', function (event) {
+            const routeLink = event.target.closest('[data-route]');
+            if (routeLink) {
+                event.preventDefault();
+                navigate(routeLink.getAttribute('data-route'));
+                return;
+            }
+
+            const languageOption = event.target.closest('[data-language]');
+            if (languageOption) {
+                setLanguage(languageOption.getAttribute('data-language'));
+                return;
+            }
+
+            const faqToggle = event.target.closest('[data-faq-toggle]');
+            if (faqToggle) {
+                const index = Number(faqToggle.getAttribute('data-faq-toggle'));
+                state.faqOpen = state.faqOpen === index ? null : index;
+                renderPage();
+                return;
+            }
+
+            if (state.languageOpen && !event.target.closest('.language-wrap')) {
+                state.languageOpen = false;
+                renderLanguageMenu();
+            }
+        });
+
+        els.menuButton.addEventListener('click', toggleMenu);
+        els.sidebarClose.addEventListener('click', closeMenu);
+        els.sidebarOverlay.addEventListener('click', closeMenu);
+        els.languageButton.addEventListener('click', toggleLanguageMenu);
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                if (state.menuOpen) {
+                    closeMenu();
+                }
+                if (state.languageOpen) {
+                    state.languageOpen = false;
+                    renderLanguageMenu();
+                }
+            }
+        });
+
+        document.addEventListener('mousemove', function (event) {
+            document.body.style.setProperty('--mouse-x', event.clientX + 'px');
+            document.body.style.setProperty('--mouse-y', event.clientY + 'px');
+        });
+
+        window.addEventListener('hashchange', handleHashRoute);
+        window.addEventListener('load', function () {
+            createParticles();
+            handleHashRoute();
+            window.setInterval(rotateBenefit, 3200);
+        });
+    </script>
+</body>
+</html>
